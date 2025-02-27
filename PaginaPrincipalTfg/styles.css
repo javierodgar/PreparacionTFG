@@ -1,0 +1,152 @@
+/* Estilo Global */
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    color: white;
+    background: url('https://hips.hearstapps.com/hmg-prod/images/porsche-mission-x-1-64ed928f110a6.jpg') no-repeat fixed center;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Contenedor principal en forma de columna */
+.container {
+    display: flex;
+    flex-direction: column; /* Disposición en columna */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 1000px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    border-radius: 10px;
+}
+
+/* Título Principal */
+.mainTitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 3em;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+/* Subtítulo */
+.subTitle {
+    font-size: 1.5em;
+    margin-top: 10px;
+}
+
+/* Estilo de los botones */
+.btnLogin, .btnRegister {
+    padding: 10px 25px;
+    font-size: 1em;
+    margin: 10px;
+    background-color: transparent; /* Fondo transparente */
+    border: 2px solid red; /* Borde rojo */
+    color: red; /* Texto rojo */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, color 0.3s;
+}
+
+.btnLogin:hover, .btnRegister:hover {
+    background-color: darkred;
+    transform: scale(1.1);
+}
+
+/* Contenedor de los botones alineado horizontalmente */
+.buttons {
+    display: flex;
+    justify-content: center; /* Centra los botones */
+    margin-top: 20px;
+}
+
+/* Titulo 'Quien somos' */
+div h2 {
+    font-size: 2em;
+    margin: 20px 0;
+}
+
+/* Párrafo 'Quien somos' */
+div p {
+    font-size: 1em;
+    line-height: 1.5;
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+/* Modal */
+.modal {
+    display: none; /* Ocultar modal por defecto */
+    position: fixed;
+    z-index: 9999; /* Asegura que el modal esté por encima de todo */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo más oscuro */
+    transition: background-color 0.3s ease; /* Suavizar la transición del fondo */
+}
+
+/* Estilo del contenido del modal */
+.modal-content {
+    background-color: rgba(0, 0, 0, 0.9); /* Fondo del modal más oscuro */
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    color: white;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5); /* Agregar sombra para resaltar el modal */
+}
+
+/* Estilos del formulario dentro del modal (columnas) */
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-content input {
+    margin: 10px;
+    padding: 10px;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    color: white;
+    font-size: 1em;
+}
+
+.modal-content input[type="submit"] {
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-content input[type="submit"]:hover {
+    background-color: darkred;
+}
+
+/* Estilo para el botón de cerrar */
+.close, .closeReg {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Efecto cuando el mouse pasa sobre el botón de cerrar */
+.close:hover,
+.close:focus {
+    color: #f1f1f1;
+    text-decoration: none;
+    cursor: pointer;
+}
