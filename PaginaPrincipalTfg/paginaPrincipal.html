@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="stylePrincipal.css">
+</head>
+<body>
+    <!-- Barra de navegación izquierda -->
+    <div class="sidebar">
+        <div class="profile-pic" id="profilePic"></div>
+        <div class="nav-icons">
+            <div class="nav-icon" id="createPostBtn"></div>
+            <div class="nav-icon"></div>
+            <div class="nav-icon"></div>
+            <div class="nav-icon"></div>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <!-- Encabezado -->
+        <div class="header">
+            <div style="width: 200px;"></div> <!-- Espacio placeholder para alinear el título -->
+            <h1>MotorLand</h1>
+            <div class="clock" id="clock"></div>
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="content">
+            <div class="main-section" id="postsContainer">
+                <!-- Contenido principal (2/3) -->
+                <div class="filter-container">
+                    <input type="text" id="filterInput" placeholder="Buscar...">
+                    <label><input type="radio" name="filterType" value="usuario" checked> Autor</label>
+                    <label><input type="radio" name="filterType" value="titulo"> Título</label>
+                    <label><input type="radio" name="filterType" value="hashtags"> Hashtags</label>
+                </div>
+                <div id="postsContainer">
+
+                </div>
+            </div>
+            <div class="side-section">
+                <!-- Contenido secundario (1/3) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventana modal para crear publicación -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Crear Publicación</h2>
+            <form id="postForm">
+                <label for="postImage">Imagen (opcional):</label>
+                <input type="file" id="postImage" name="postImage" accept="image/*">
+
+                <label for="postTitle">Título:</label>
+                <input type="text" id="postTitle" name="postTitle" required>
+
+                <label for="postText">Texto:</label>
+                <textarea id="postText" name="postText" required></textarea>
+
+                <label for="postHashtags">Hashtags (separados por comas):</label>
+                <input type="text" id="postHashtags" name="postHashtags" placeholder="#ejemplo, #prueba">
+
+                <button type="submit">Publicar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scriptPagPrincipal.js"></script>
+    <script src="scriptUserProfile.js"></script>
+</body>
+</html>
