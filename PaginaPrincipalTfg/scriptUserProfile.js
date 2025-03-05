@@ -35,7 +35,7 @@ function showUserProfile() {
     mainSection.appendChild(userPostsDiv);
 
     // Obtener datos del usuario
-    fetch("get_user_data.php", {
+    fetch("data/get_user_data.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: username })
@@ -112,9 +112,6 @@ function showEditUserModal(userData) {
     });
 
     document.getElementById("editUserForm").addEventListener("submit", function(event) {
-        // event.preventDefault();
-        // alert("Funcionalidad de guardado aún no implementada. Necesita un PHP 'update_user.php'.");
-        // editModal.remove();
         event.preventDefault();
 
         const updatedData = {
@@ -126,7 +123,7 @@ function showEditUserModal(userData) {
             ciudad_residencia: document.getElementById("editCiudad").value
         };
 
-        fetch("update_user.php", {
+        fetch("data/update_user.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedData)

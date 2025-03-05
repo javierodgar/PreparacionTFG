@@ -8,7 +8,7 @@ function getCookie(name) {
 let allPosts = []; // Almacenar todas las publicaciones cargadas
 
 function loadPosts(filter = null) {
-    fetch("get_posts.php", {
+    fetch("data/get_posts.php", {
         method: "GET"
     })
     .then(response => response.json())
@@ -131,7 +131,7 @@ document.getElementById("postForm").addEventListener("submit", function(event) {
     formData.append("texto", text);
     formData.append("hashtags", hashtags);
 
-    fetch("save_post.php", {
+    fetch("data/save_post.php", {
         method: "POST",
         body: formData
     })

@@ -87,7 +87,7 @@ var modalLog = document.getElementById("myModal");
         //Mostramos los datos cifrados y listos para enviar a la base de datos
         console.log("Datos de Login:", JSON.stringify(loginData));
 
-        fetch("dataGet.php", {
+        fetch("data/dataGet.php", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -186,7 +186,7 @@ var modalLog = document.getElementById("myModal");
         // Mostramos los datos por consola ya preparados para enviar al servidor
         console.log("Datos de Registro:", JSON.stringify(registrationData));
 
-        fetch("dataUser.php", {
+        fetch("data/dataUser.php", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -201,7 +201,7 @@ var modalLog = document.getElementById("myModal");
                 document.getElementById("usernameReg").value = ""; // Vaciar solo el campo de usuario
             } else {
                 // Si el usuario no existe, proceder con el envío al servidor
-                fetch("dataSave.php", {
+                fetch("data/dataSave.php", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
