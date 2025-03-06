@@ -25,3 +25,10 @@ CREATE TABLE IF NOT EXISTS Publicaciones (
     hashtags VARCHAR(255),                          -- Hashtags separados por comas
     FOREIGN KEY (usuario) REFERENCES Usuarios(usuario) ON DELETE CASCADE -- Clave foránea
 );
+
+CREATE TABLE `seguidores` (
+  `seguidor` varchar(50) NOT NULL,
+  `seguido` varchar(50) NOT NULL,
+  PRIMARY KEY (`seguidor`,`seguido`),
+  KEY `seguido` (`seguido`)
+);
