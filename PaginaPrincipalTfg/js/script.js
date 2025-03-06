@@ -1,7 +1,9 @@
+//incializamos variables que contienen los elementos del DOM
 var modalLog = document.getElementById("myModal");
     var btn = document.querySelector(".btnLogin");
     var spanLog = document.querySelector(".close");
 
+    //funciones para mostrar y ocultar el modal de login
     btn.onclick = function() {
         modalLog.style.display = "block";
     }
@@ -67,6 +69,7 @@ var modalLog = document.getElementById("myModal");
     document.getElementById("loginForm").onsubmit = async function(event) {
         event.preventDefault();  // Prevenir el comportamiento por defecto (recargar la página)
 
+        //recogemos el valor de usernameLog
         let usernameLog = document.getElementById('usernameLog').value;
         //Generamos nuestra clave
         let secretKey = await generateKeyFromUsername(usernameLog);
@@ -77,7 +80,8 @@ var modalLog = document.getElementById("myModal");
         //Convertir el resultado cifrado a un formato que se pueda mostrar o almacenar
         let encryptedPasswordBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
         let ivBase64 = btoa(String.fromCharCode(...iv));
-
+        
+        //Creamos un objeto JSON con los datos cifrados
         let loginData = {
             username: usernameLog,
             encryptedPassword: encryptedPasswordBase64,  
@@ -94,16 +98,20 @@ var modalLog = document.getElementById("myModal");
             },
             body: JSON.stringify({ username: usernameLog })
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text(); // Obtener texto crudo en lugar de JSON directamente
+        })
+        .then(text => {
+            console.log("Respuesta cruda del servidor:", text); // Mostrar en consola
+            const data = JSON.parse(text); // Intentar parsear como JSON
             console.log(data);
-            //realizamos las comprobaciones sobre los datos que se han recibido para aregurarnos de que el usuario existe y la contraseña es correcta
-            //en princpio la comprobacion de si el usuarios existe es redundante ya que rescatamos los datos apartir del nombre del usuario, pero
-            //se realiza para asegurar el correcto funcionamiento de la base de datos
             if (data.data) {
                 console.log("Usuario:", data.data.username);
                 console.log("Contraseña cifrada:", data.data.encryptedPassword);
-                if (data.data.username){
+                if (data.data.username) {
                     console.log("Usuario correcto");
                     if (data.data.encryptedPassword === encryptedPasswordBase64) {
                         console.log("Contraseña correcta");
@@ -123,10 +131,12 @@ var modalLog = document.getElementById("myModal");
 
     };
 
+    //inicializamos las variables, en este caso son las que usaremos para el registro
     let modalReg = document.getElementById("registerModal");
     let btnRegister = document.querySelector(".btnRegister");
     let spanClose = document.querySelector(".closeReg");
 
+    //funciones para mostrar y ocultar el modal de registro
     btnRegister.onclick = function () {
         modalReg.style.display = "block";
     };
@@ -172,7 +182,7 @@ var modalLog = document.getElementById("myModal");
         let encryptedPasswordBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
         let ivBase64 = btoa(String.fromCharCode(...iv));
 
-        //creamos objeto JSON
+        //creamos objeto JSON para enviarselo a la base de datos
         let registrationData = {
             username: usernameReg,
             firstName: firstName,
@@ -186,6 +196,7 @@ var modalLog = document.getElementById("myModal");
         // Mostramos los datos por consola ya preparados para enviar al servidor
         console.log("Datos de Registro:", JSON.stringify(registrationData));
 
+        //fetch para comprobar si el usuario que se desea registrar ya exsite en la base de datos
         fetch("data/dataUser.php", {
             method: "POST",
             headers: {
@@ -200,7 +211,7 @@ var modalLog = document.getElementById("myModal");
                 alert("El nombre de usuario ya está en uso. Por favor, elige otro.");
                 document.getElementById("usernameReg").value = ""; // Vaciar solo el campo de usuario
             } else {
-                // Si el usuario no existe, proceder con el envío al servidor
+                // Si el usuario no existe, proceder con el envío al servidor (enviamos el objeto json que hemos preparado anterioremente)
                 fetch("data/dataSave.php", {
                     method: "POST",
                     headers: {

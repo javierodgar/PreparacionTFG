@@ -32,7 +32,7 @@ if (empty($username)) {
 // Conexión a la base de datos
 $host = "localhost"; // Ajusta según tu configuración
 $dbUsername = "root"; // Ajusta según tu usuario de BD
-$dbPassword = "root";    // Ajusta según tu contraseña de BD
+$dbPassword = "";    // Ajusta según tu contraseña de BD
 $dbName = "RegistroUsuarios"; // Nombre de la base de datos
 
 try {

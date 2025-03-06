@@ -30,7 +30,7 @@ if (empty($username) || empty($nombre) || empty($apellido1) || empty($email) || 
 
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "root";
+$dbPassword = "";
 $dbName = "RegistroUsuarios";
 
 try {

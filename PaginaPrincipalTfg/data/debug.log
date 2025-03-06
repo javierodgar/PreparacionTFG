@@ -1,0 +1,290 @@
+Petición recibida: {"follower":"javi","followed":"admin","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"admin","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"\n                            Seguir\n                        "}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => 
+                            Seguir
+                        
+)
+
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"\n                            Dejar de seguir\n                        "}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => 
+                            Dejar de seguir
+                        
+)
+
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 0
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1
+Petición recibida: {"follower":"javi","followed":"asd","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => javi
+    [followed] => asd
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"asd","followed":"admin","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => asd
+    [followed] => admin
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"asd","followed":"javi","action":"follow"}
+Datos decodificados: Array
+(
+    [follower] => asd
+    [followed] => javi
+    [action] => follow
+)
+
+Follow - Filas afectadas: 1
+Petición recibida: {"follower":"asd","followed":"javi","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => asd
+    [followed] => javi
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1
+Petición recibida: {"follower":"asd","followed":"admin","action":"unfollow"}
+Datos decodificados: Array
+(
+    [follower] => asd
+    [followed] => admin
+    [action] => unfollow
+)
+
+Unfollow - Filas afectadas: 1

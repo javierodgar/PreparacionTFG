@@ -1,5 +1,5 @@
 <?php
-// archivo: get_user_data.php
+// archivo: data/get_user_data.php
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -17,7 +17,7 @@ if (empty($username)) {
 
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "root";
+$dbPassword = "";
 $dbName = "RegistroUsuarios";
 
 try {
@@ -46,17 +46,40 @@ try {
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $postsResult = $stmt->get_result();
-
     $posts = [];
     while ($row = $postsResult->fetch_assoc()) {
         $posts[] = $row;
+    }
+
+    // Obtener usuarios a los que sigue (seguidos)
+    $stmt = $conn->prepare("SELECT seguido FROM Seguidores WHERE seguidor = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $followingResult = $stmt->get_result();
+    $following = [];
+    while ($row = $followingResult->fetch_assoc()) {
+        $following[] = $row['seguido'];
+    }
+
+    // Obtener usuarios que lo siguen (seguidores)
+    $stmt = $conn->prepare("SELECT seguidor FROM Seguidores WHERE seguido = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $followersResult = $stmt->get_result();
+    $followers = [];
+    while ($row = $followersResult->fetch_assoc()) {
+        $followers[] = $row['seguidor'];
     }
 
     $response = [
         "message" => "Datos del usuario obtenidos",
         "user" => $userData,
         "posts" => $posts,
-        "postCount" => count($posts)
+        "postCount" => count($posts),
+        "following" => $following,
+        "followers" => $followers,
+        "followingCount" => count($following),
+        "followersCount" => count($followers)
     ];
 
     http_response_code(200);

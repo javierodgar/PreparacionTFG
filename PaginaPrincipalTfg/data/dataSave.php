@@ -38,7 +38,7 @@ if (empty($username) || empty($firstName) || empty($lastName1) || empty($city) |
 // Conexión a la base de datos
 $host = "localhost"; // Cambia esto según tu configuración
 $dbUsername = "root"; // Cambia esto según tu usuario de BD
-$dbPassword = "root";    // Cambia esto según tu contraseña de BD
+$dbPassword = "";    // Cambia esto según tu contraseña de BD
 $dbName = "RegistroUsuarios"; // Nombre de la base de datos que creamos
 
 try {

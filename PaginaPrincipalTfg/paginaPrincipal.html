@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="stylePrincipal.css">
+    <link rel="stylesheet" href="css/stylePrincipal.css">
 </head>
 <body>
     <!-- Barra de navegación izquierda -->
@@ -12,8 +12,8 @@
         <div class="profile-pic" id="profilePic"></div>
         <div class="nav-icons">
             <div class="nav-icon" id="createPostBtn"></div>
-            <div class="nav-icon"></div>
-            <div class="nav-icon"></div>
+            <div class="nav-icon" id="showPosts"></div>
+            <div class="nav-icon" id="allUsers"></div>
             <div class="nav-icon"></div>
         </div>
     </div>
@@ -29,17 +29,9 @@
 
         <!-- Cuerpo -->
         <div class="content">
-            <div class="main-section" id="postsContainer">
+            <div class="main-section" id="container">
                 <!-- Contenido principal (2/3) -->
-                <div class="filter-container">
-                    <input type="text" id="filterInput" placeholder="Buscar...">
-                    <label><input type="radio" name="filterType" value="usuario" checked> Autor</label>
-                    <label><input type="radio" name="filterType" value="titulo"> Título</label>
-                    <label><input type="radio" name="filterType" value="hashtags"> Hashtags</label>
-                </div>
-                <div id="postsContainer">
-
-                </div>
+                
             </div>
             <div class="side-section">
                 <!-- Contenido secundario (1/3) -->
@@ -70,7 +62,7 @@
         </div>
     </div>
 
-    <script src="scriptPagPrincipal.js"></script>
-    <script src="scriptUserProfile.js"></script>
+    <script src="js/scriptPagPrincipal.js"></script>
+    <!-- <script src="js/scriptUserProfile.js"></script> -->
 </body>
 </html>

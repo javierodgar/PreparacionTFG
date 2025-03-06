@@ -231,6 +231,27 @@ body {
     margin-bottom: 10px;
 }
 
+/* estilos para pestaña de todos los usuarios */
+.user-post {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.follow-btn {
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.follow-btn:hover {
+    background-color: #555;
+}
+/* --------------------------------------------- */
+
 .modal {
     display: none;
     position: fixed;
