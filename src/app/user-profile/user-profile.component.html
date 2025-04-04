@@ -1,0 +1,85 @@
+<div class="main-section">
+    <div class="user-data" *ngIf="userData; else noUser">
+        <img *ngIf="profileImage" [src]="dataUrl + profileImage" alt="Imagen de perfil" class="profile-image" />
+      <h2>{{ userData.usuario }} <span class="post-count">{{ posts.length }}</span></h2>
+      <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
+      <p><strong>Apellido 1:</strong> {{ userData.apellido1 }}</p>
+      <p><strong>Apellido 2:</strong> {{ userData.apellido2 || 'No especificado' }}</p>
+      <p><strong>Email:</strong> {{ userData.correo_electronico }}</p>
+      <p><strong>Ciudad:</strong> {{ userData.ciudad_residencia }}</p>
+    </div>
+    <ng-template #noUser>
+      <div class="user-data">
+        <p>Usuario no encontrado o error al cargar los datos.</p>
+      </div>
+    </ng-template>
+  
+    <button id="editUserBtn" (click)="openEditModal()">Editar perfil</button>
+  
+    <div class="follow-info">
+      <p>Seguidores: <span id="followersCount">{{ followersCount }}</span></p>
+      <p>Siguiendo: <span id="followingCount">{{ followingCount }}</span></p>
+      <form [formGroup]="followForm" (ngSubmit)="onFollowSubmit()">
+        <label for="followUsername">Seguir a:</label>
+        <input type="text" id="followUsername" formControlName="followUsername" placeholder="Nombre de usuario" />
+        <button type="submit" [disabled]="!followForm.valid">Seguir</button>
+        <button type="button" id="unfollowBtn" (click)="onUnfollow()">Dejar de seguir</button>
+      </form>
+    </div>
+  
+    <div class="user-posts">
+      <h3>Tus publicaciones</h3>
+      <div *ngIf="posts.length === 0">
+        <p>No tienes publicaciones aún.</p>
+      </div>
+      <div *ngFor="let post of posts" class="post">
+        <h3>{{ post.titulo }}</h3>
+        <img *ngIf="post.imagen" [src]="dataUrl + post.imagen" alt="Imagen de publicación" />
+        <p>{{ post.texto }}</p>
+        <div *ngIf="post.hashtags" class="hashtags">{{ post.hashtags }}</div>
+      </div>
+    </div>
+  
+    <div class="modal" *ngIf="showEditModal">
+      <div class="modal-content">
+        <span class="close" (click)="closeEditModal()">×</span>
+        <h2>Editar Perfil</h2>
+        <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()">
+          <label for="editNombre">Nombre:</label>
+          <input type="text" id="editNombre" formControlName="nombre" required />
+          <div *ngIf="editForm.get('nombre')?.errors?.['required'] && editForm.get('nombre')?.touched" class="error">
+            El nombre es obligatorio.
+          </div>
+  
+          <label for="editApellido1">Apellido 1:</label>
+          <input type="text" id="editApellido1" formControlName="apellido1" required />
+          <div *ngIf="editForm.get('apellido1')?.errors?.['required'] && editForm.get('apellido1')?.touched" class="error">
+            El primer apellido es obligatorio.
+          </div>
+  
+          <label for="editApellido2">Apellido 2:</label>
+          <input type="text" id="editApellido2" formControlName="apellido2" />
+  
+          <label for="editEmail">Email:</label>
+          <input type="email" id="editEmail" formControlName="correo_electronico" required />
+          <div *ngIf="editForm.get('correo_electronico')?.errors?.['required'] && editForm.get('correo_electronico')?.touched" class="error">
+            El email es obligatorio.
+          </div>
+          <div *ngIf="editForm.get('correo_electronico')?.errors?.['email'] && editForm.get('correo_electronico')?.touched" class="error">
+            Ingresa un email válido.
+          </div>
+  
+          <label for="editCiudad">Ciudad:</label>
+          <input type="text" id="editCiudad" formControlName="ciudad_residencia" required />
+          <div *ngIf="editForm.get('ciudad_residencia')?.errors?.['required'] && editForm.get('ciudad_residencia')?.touched" class="error">
+            La ciudad es obligatoria.
+          </div>
+  
+          <label for="editProfileImage">Imagen de perfil (opcional):</label>
+          <input type="file" id="editProfileImage" (change)="onFileChange($event)" accept="image/*" />
+  
+          <button type="submit" [disabled]="!editForm.valid">Guardar cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,217 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ServiciosService } from '../servicios.service';
+
+@Component({
+  selector: 'app-user-profile',
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  templateUrl: './user-profile.component.html',
+  styleUrl: './user-profile.component.css'
+})
+export class UserProfileComponent {
+  //declaracion de variables necesarias para este componente
+  dataUrl = 'dataTFG/';
+  userData: any = null;
+  posts: any[] = [];
+  followersCount: number = 0;
+  followingCount: number = 0;
+  showEditModal: boolean = false;
+  username: string | null = null;
+  profileImage: string | null = null;
+
+  //formulario para edicion de usuario
+  editForm = new FormGroup({
+    nombre: new FormControl('', [Validators.required]),
+    apellido1: new FormControl('', [Validators.required]),
+    apellido2: new FormControl(''),
+    correo_electronico: new FormControl('', [Validators.required, Validators.email]),
+    ciudad_residencia: new FormControl('', [Validators.required]),
+    profile_image: new FormControl<File | null>(null) // Campo para la imagen
+  });
+
+  //formulario para logica de seguimiento falta decidir si se hara desde aqui o no
+  followForm = new FormGroup({
+    followUsername: new FormControl('', [Validators.required])
+  });
+
+  constructor(private servicios: ServiciosService) {}
+
+  /**
+   * Se llama cuando se inicia el componente. Se encarga de:
+   *
+   * 1. Obtener el nombre de usuario desde una cookie.
+   * 2. Mostrar un mensaje de error si no hay usuario logeado.
+   * 3. Cargar la informacion del usuario.
+   * 4. Cargar la imagen del perfil del usuario.
+   */
+  ngOnInit() {
+    this.username = this.getCookie('username');
+    if (!this.username) {
+      alert('No hay usuario logeado. Por favor, inicia sesión.');
+      return;
+    }
+    this.loadUserData();
+    this.loadProfileImage();
+  }
+
+
+  /**
+   * Gets the value of a cookie with the given name.
+   * Returns null if the cookie does not exist.
+   * @param name The name of the cookie.
+   */
+  getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    return null;
+  }
+
+  /**
+   * Loads the user data from the server using the currently logged in user.
+   * Populates the userData, posts, followersCount, and followingCount fields.
+   * Also populates the editForm with the user data.
+   * If the user is not found, sets userData to null and logs an error.
+   */
+  loadUserData() {
+    this.servicios.getUserData(this.username!).subscribe({
+      next: (data) => {
+        if (data.user) {
+          this.userData = data.user;
+          this.posts = data.posts;
+          this.followersCount = data.followersCount;
+          this.followingCount = data.followingCount;
+          this.editForm.patchValue({
+            nombre: this.userData.nombre,
+            apellido1: this.userData.apellido1,
+            apellido2: this.userData.apellido2 || '',
+            correo_electronico: this.userData.correo_electronico,
+            ciudad_residencia: this.userData.ciudad_residencia
+          });
+        } else {
+          this.userData = null;
+          console.log('Usuario no encontrado');
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar datos del usuario:', error);
+      }
+    });
+  }
+
+  /**
+   * Loads the profile image for the currently logged in user from the server.
+   * Populates the profileImage field with the image if it exists, or null if not.
+   * Logs an error if there is an error loading the image.
+   */
+  loadProfileImage() {
+    this.servicios.getProfileImage(this.username!).subscribe({
+      next: (data) => {
+        this.profileImage = data.profile_image || null;
+      },
+      error: (error) => {
+        console.error('Error al cargar la imagen de perfil:', error);
+        this.profileImage = null;
+      }
+    });
+  }
+
+  /**
+   * Abre el modal para editar el perfil del usuario.
+   * Establece la variable showEditModal en true para mostrar el modal.
+   */
+  openEditModal() {
+    this.showEditModal = true;
+  }
+
+  /**
+   * Cierra el modal para editar el perfil del usuario.
+   * Establece la variable showEditModal en false para ocultar el modal.
+   * Limpia el formulario de edicion de perfil.
+   */
+  closeEditModal() {
+    this.showEditModal = false;
+    this.editForm.reset({
+      nombre: this.userData.nombre,
+      apellido1: this.userData.apellido1,
+      apellido2: this.userData.apellido2 || '',
+      correo_electronico: this.userData.correo_electronico,
+      ciudad_residencia: this.userData.ciudad_residencia,
+      profile_image: null
+    });
+  }
+
+  /**
+   * Handler for the file change event on the profile image input.
+   * Gets the selected file from the input element and updates the
+   * profile_image field in the edit form with the selected file.
+   * @param event The event object from the file change event.
+   */
+    onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.editForm.patchValue({ profile_image: input.files[0] });
+    }
+  }
+
+  /**
+   * Handler for the edit profile form submission.
+   * Updates the user data on the server with the form data.
+   * If the form is valid, creates a FormData object with the form data.
+   * If the user has selected a new profile image, adds it to the FormData.
+   * Submits the FormData to the updateUser endpoint.
+   * Shows an alert with the response message from the server.
+   * If the response message indicates success, closes the edit modal and reloads the user data and profile image.
+   */
+  onEditSubmit() {
+    if (this.editForm.valid) {
+      const formData = new FormData();
+      formData.append('usuario', this.username!);
+      formData.append('nombre', this.editForm.get('nombre')!.value!);
+      formData.append('apellido1', this.editForm.get('apellido1')!.value!);
+      formData.append('apellido2', this.editForm.get('apellido2')!.value || '');
+      formData.append('correo_electronico', this.editForm.get('correo_electronico')!.value!);
+      formData.append('ciudad_residencia', this.editForm.get('ciudad_residencia')!.value!);
+      const imageFile = this.editForm.get('profile_image')!.value;
+      if (imageFile) {
+        formData.append('profile_image', imageFile);
+      }
+
+      this.servicios.updateUser(formData).subscribe({
+        next: (response) => {
+          alert(response.message);
+          if (response.message === "Datos del usuario actualizados exitosamente") {
+            this.closeEditModal();
+            this.loadUserData();
+            this.loadProfileImage(); // Recargar la imagen actualizada
+          }
+        },
+        error: (error) => {
+          console.error('Error al guardar los datos:', error);
+          alert('Error al guardar los cambios');
+        }
+      });
+    }
+  }
+
+  /**
+   * Handler for the follow form submission.
+   * If the form is valid, logs the username the user wants to follow to the console.
+   * Resets the follow form.
+   */
+  onFollowSubmit() {
+    if (this.followForm.valid) {
+      console.log('Seguir a:', this.followForm.get('followUsername')?.value);
+      this.followForm.reset();
+    }
+  }
+
+  /**
+   * Handler for the unfollow button click.
+   * Currently, it only logs to the console.
+   */
+  onUnfollow() {
+    console.log('Dejar de seguir');
+  }
+}

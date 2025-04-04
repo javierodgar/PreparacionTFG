@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - ¡Te has pasado de velocidad!</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .speed-limit-sign {
+            width: 150px;
+            height: 150px;
+            background-color: red;
+            border: 5px solid red; /* Cambiar el borde a rojo */
+            border-radius: 50%; /* Hacerlo redondo */
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .speed-limit-circle {
+            width: 120px;
+            height: 120px;
+            background-color: white; /* Fondo blanco */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid red; /* Borde rojo */
+        }
+
+        .speed-limit-text {
+            font-size: 48px;
+            color: black; /* Texto negro */
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .home-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .home-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="speed-limit-sign">
+            <div class="speed-limit-circle">
+                <div class="speed-limit-text">404</div>
+            </div>
+        </div>
+        <h1>¡you have exceeded the speed limit!</h1>
+        <p>It looks like the page you were looking for has taken an unexpected detour and isn't located at this address.</p>
+        <p>But don't worry, we can help you get back on the main road!</p>
+        <a href="/" class="home-link">Main Road</a>
+    </div>
+</body>
+</html>
