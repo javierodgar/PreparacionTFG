@@ -4,6 +4,7 @@ import { MainComponent } from './main/main.component';
 import { PostsComponent } from './posts/posts.component';
 import { ErrorComponent } from './error/error.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { PostComentsComponent } from './post-coments/post-coments.component';
 
 export const routes: Routes = [
     {
@@ -15,6 +16,7 @@ export const routes: Routes = [
         component: MainComponent,
         children: [
             { path: 'posts', component: PostsComponent },
+            {path: 'big_post/:id', component: PostComentsComponent},
             { path: 'user_info', component: UserProfileComponent}
         ]
     },

@@ -1,0 +1,42 @@
+
+  <h1 class="detalle-titulo">{{ title }}</h1>
+  @if (img) {
+    <img [src]="dataUrl + img" alt="Imagen de la publicación" class="detalle-imagen">
+  }
+  <p class="detalle-texto">{{ text }}</p>
+  @if (hastagh) {
+    <div class="detalle-hashtags">
+      {{ hastagh }}
+    </div>
+  }
+
+  <div>
+    <button (click)="onLikeButtonClick()">Like</button><p>likes totales{{likes}}</p>
+    <button (click)="onDislikeButtonClick()">Dislike</button><p>dislikes totales{{dislikes}}</p>
+  </div>
+
+  <h2>Comentarios</h2>
+
+  <div>
+    <h3>Añadir un comentario</h3>
+    <textarea [(ngModel)]="newCommentText" placeholder="Escribe tu comentario aquí"></textarea>
+    <button (click)="postComment()">Publicar comentario</button>
+  </div>
+
+  @if(coments !== '' && coments.length > 0){
+    @for (comentario of publicacionConComentarios.comentarios; track comentario.comentario_id) {
+        <div class="comentario">
+          <p><strong>{{ comentario.nombre_usuario_comentario }}:</strong> {{ comentario.comentario_texto }}</p>
+          <small>{{ comentario.comentario_fecha_creacion }}</small>
+        </div>
+      }
+  }
+  @if(coments == '' || coments.length === 0){
+    <p>no exsisten comentarios, se el primero</p>
+  }
+
+  
+
+  
+
+  

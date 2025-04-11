@@ -3,7 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServiciosService } from '../servicios.service';
+import { PostUpdateService } from '../post-update.service';
+import { Subscription } from 'rxjs';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-posts',
@@ -20,59 +23,67 @@ export class PostsComponent {
   filterType: string = 'usuario'; // Tipo de filtro por defecto
   showModal: boolean = false; //control para mostrar modal
 
+  private postUpdateSubscription: Subscription;
+
+
   // Formulario para crear publicaciones
   postForm = new FormGroup({
-    usuario: new FormControl('', [Validators.required]),
     titulo: new FormControl('', [Validators.required]),
     texto: new FormControl('', [Validators.required]),
     hashtags: new FormControl(''),
     imagen: new FormControl<File |null>(null)
   });
 
-  constructor(private http: HttpClient, private servicios: ServiciosService) {}
+  constructor(private router: Router, private http: HttpClient, private servicios: ServiciosService, private postUpdateService: PostUpdateService) {
+    this.postUpdateSubscription = this.postUpdateService.postCreated$.subscribe(() => { // Suscribirse al servicio de actualización de publicaciones
+      this.loadPosts(); // Cargar publicaciones actualizadas
+    });
+  }
 
   ngOnInit() {
     this.loadPosts(); // Cargar publicaciones al iniciar el componente
   }
 
+  goToPost(id: number) {
+    this.router.navigate(['main/big_post', id]);
+  }
+
   
   loadPosts(filter: { value: string } | null = null) {
     this.servicios.getPosts().subscribe({
-      next: (data:any) => {
+      next: (data: any) => {
         if (data.data && data.data.length > 0) {
-          this.posts = data.data;
+          this.posts = data.data.map((post: any) => {
+            if (post.hashtags) {
+              // Divide la cadena por comas y elimina espacios en blanco alrededor
+              post.formattedHashtags = post.hashtags.split(',').map((tag: string) => tag.trim());
+            } else {
+              post.formattedHashtags = [];
+            }
+            return post;
+          });
           this.applyFilter(filter);
         } else {
           this.filteredPosts = [];
         }
       },
-      error: (error:any) => {
+      error: (error: any) => {
         console.error("Error al cargar publicaciones:", error);
         this.filteredPosts = [];
       }
     });
   }
 
-  /**
-   * Aplica el filtro a las publicaciones y muestra las publicaciones
-   * que coinciden con el valor del filtro.
-   * Si no hay filtro, muestra todas las publicaciones.
-   * @param filter { value: string } | null Valor del filtro, o null si no hay
-   *        filtro.
-   */
   applyFilter(filter: { value: string } | null) {
     if (filter && filter.value) {
-      this.filterValue = filter.value;
-      this.filteredPosts = this.posts.filter(post => {
-        const field = post[this.filterType] ? post[this.filterType].toLowerCase() : "";
-        return field.includes(this.filterValue.toLowerCase());
-      });
+      const searchTerm = filter.value.toLowerCase();
+      this.filteredPosts = this.posts.filter(post =>
+        post.titulo?.toLowerCase().includes(searchTerm) ||
+        post.texto?.toLowerCase().includes(searchTerm) ||
+        post.formattedHashtags?.some((tag: string) => tag.toLowerCase().includes(searchTerm))
+      );
     } else {
-      this.filteredPosts = [...this.posts]; // Mostrar todas si no hay filtro
-    }
-
-    if (this.filteredPosts.length === 0) {
-      console.log("No se encontraron publicaciones con el filtro:", this.filterValue);
+      this.filteredPosts = [...this.posts];
     }
   }
 

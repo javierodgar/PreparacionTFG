@@ -75,6 +75,9 @@
             <label for="city">Ciudad de Residencia:</label>
             <input type="text" [(ngModel)]="registerData.city" name="city" required>
 
+            <label for="profileImage">Foto de Perfil:</label>
+            <input type="file" (change)="onFileChange($event)" name="profileImage" accept="image/*">
+
             <label for="password">Contraseña:</label>
             <input type="password" [(ngModel)]="registerData.password" name="password" required>
 
@@ -82,7 +85,7 @@
             <input type="password" [(ngModel)]="registerData.confirmPassword" name="confirmPassword" required>
 
             <input type="submit" value="Registrar">
-        </form>
+        </form> 
     </div>
 </div>
 <!-- <script src="js/script.js"></script> -->

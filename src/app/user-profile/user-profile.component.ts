@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ServiciosService } from '../servicios.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { PostUpdateService } from '../post-update.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -20,8 +23,12 @@ export class UserProfileComponent {
   username: string | null = null;
   profileImage: string | null = null;
 
+  private postUpdateSubscription: Subscription;
+
+
   //formulario para edicion de usuario
   editForm = new FormGroup({
+    usuario: new FormControl('', [Validators.required]),
     nombre: new FormControl('', [Validators.required]),
     apellido1: new FormControl('', [Validators.required]),
     apellido2: new FormControl(''),
@@ -35,7 +42,11 @@ export class UserProfileComponent {
     followUsername: new FormControl('', [Validators.required])
   });
 
-  constructor(private servicios: ServiciosService) {}
+  constructor(private servicios: ServiciosService, private router: Router, private postUpdateService: PostUpdateService) {
+    this.postUpdateSubscription = this.postUpdateService.postCreated$.subscribe(() => {
+      this.loadPosts();
+    })
+  }
 
   /**
    * Se llama cuando se inicia el componente. Se encarga de:
@@ -49,7 +60,8 @@ export class UserProfileComponent {
     this.username = this.getCookie('username');
     if (!this.username) {
       alert('No hay usuario logeado. Por favor, inicia sesión.');
-      return;
+        this.router.navigate(['/']);
+
     }
     this.loadUserData();
     this.loadProfileImage();
@@ -68,6 +80,32 @@ export class UserProfileComponent {
     return null;
   }
 
+  
+/**
+ * Loads the posts of the currently logged-in user from the server.
+ * If the username is available, it makes a request to fetch user data and updates the posts array.
+ * Logs a message if no posts are found or if there is an error in retrieving posts.
+ * Warns if there is no logged-in user.
+ */  
+  loadPosts() {
+    if (this.username) {
+      this.servicios.getUserData(this.username).subscribe({
+        next: (data) => {
+          if (data && data.posts) {
+            this.posts = data.posts;
+          } else {
+            console.log('No se encontraron publicaciones o hubo un error al recargarlas.');
+          }
+        },
+        error: (error) => {
+          console.error('Error al recargar las publicaciones:', error);
+        }
+      });
+    } else {
+      console.warn('No se puede recargar las publicaciones porque no hay usuario logeado.');
+    }
+  }
+
   /**
    * Loads the user data from the server using the currently logged in user.
    * Populates the userData, posts, followersCount, and followingCount fields.
@@ -83,6 +121,7 @@ export class UserProfileComponent {
           this.followersCount = data.followersCount;
           this.followingCount = data.followingCount;
           this.editForm.patchValue({
+            usuario: this.userData.usuario,
             nombre: this.userData.nombre,
             apellido1: this.userData.apellido1,
             apellido2: this.userData.apellido2 || '',
@@ -155,6 +194,13 @@ export class UserProfileComponent {
     }
   }
 
+  private setCookie(name: string, value: string, days: number): void {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+  }
+
   /**
    * Handler for the edit profile form submission.
    * Updates the user data on the server with the form data.
@@ -168,6 +214,7 @@ export class UserProfileComponent {
     if (this.editForm.valid) {
       const formData = new FormData();
       formData.append('usuario', this.username!);
+      formData.append('usuarioNuevo', this.editForm.get('usuario')!.value!);
       formData.append('nombre', this.editForm.get('nombre')!.value!);
       formData.append('apellido1', this.editForm.get('apellido1')!.value!);
       formData.append('apellido2', this.editForm.get('apellido2')!.value || '');
@@ -182,6 +229,8 @@ export class UserProfileComponent {
         next: (response) => {
           alert(response.message);
           if (response.message === "Datos del usuario actualizados exitosamente") {
+            this.setCookie('username', this.editForm.get('usuario')!.value!, 1);
+            this.username = this.getCookie('username');
             this.closeEditModal();
             this.loadUserData();
             this.loadProfileImage(); // Recargar la imagen actualizada

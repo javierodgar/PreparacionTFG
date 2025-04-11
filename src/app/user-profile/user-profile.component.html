@@ -45,6 +45,12 @@
         <span class="close" (click)="closeEditModal()">×</span>
         <h2>Editar Perfil</h2>
         <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()">
+          <label for="usuario">Nombre de Usuario:</label>
+          <input type="text" id="usuario" formControlName="usuario" required>
+          <div *ngIf="editForm.get('usuario')?.errors?.['required'] && editForm.get('usuario')?.touched" class="error">
+            El usuario es requerido
+          </div>
+
           <label for="editNombre">Nombre:</label>
           <input type="text" id="editNombre" formControlName="nombre" required />
           <div *ngIf="editForm.get('nombre')?.errors?.['required'] && editForm.get('nombre')?.touched" class="error">

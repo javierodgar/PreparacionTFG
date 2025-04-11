@@ -28,7 +28,8 @@ export class ArriveComponent {
     email: '',
     city: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    profileImage: null as File | null
   };
 
   //funcion para generacion de claves de cifrado
@@ -151,32 +152,44 @@ export class ArriveComponent {
     this.closeModal('login');
   }
 
-  /**
-   * Funcion encargada de registrar a un usuario en la base de datos.
-   * Primero verifica que las contraseñas coincidan, de ser asi, 
-   * se cifra la contraseña con el nombre de usuario como clave
-   * y se envia al servidor para su registro.
-   * Si las contraseñas no coinciden, se muestra un mensaje de error.
-   */
-  async onRegisterSubmit() {
-    if (this.registerData.password === this.registerData.confirmPassword) {
-      console.log('Register data:', this.registerData);
-      let secretKey = await this.generateKeyFromUsername(this.registerData.username);
-      let { encryptedData, iv } = await this.encryptPassword(this.registerData.password, secretKey);
-      let encryptedPasswordBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
-      const response = await this.servicios.register(
-        this.registerData.username,
-        this.registerData.firstName,
-        this.registerData.lastName1,
-        this.registerData.lastName2,
-        this.registerData.city,             
-        this.registerData.email,
-        encryptedPasswordBase64
-      );
-      console.log('Register Respuesta:', response);
-      this.closeModal('register');
-    } else {
-      alert('Las contraseñas no coinciden');
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+        this.registerData.profileImage = file;
     }
-  }
+}
+
+  async onRegisterSubmit() {
+        if (this.registerData.password === this.registerData.confirmPassword) {
+            console.log('Register data:', this.registerData);
+            let secretKey = await this.generateKeyFromUsername(this.registerData.username);
+            let { encryptedData, iv } = await this.encryptPassword(this.registerData.password, secretKey);
+            let encryptedPasswordBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
+
+            const formData = new FormData();
+            formData.append('username', this.registerData.username);
+            formData.append('firstName', this.registerData.firstName);
+            formData.append('lastName', this.registerData.lastName1);
+            formData.append('lastName2', this.registerData.lastName2 || '');
+            formData.append('city', this.registerData.city);
+            formData.append('email', this.registerData.email);
+            formData.append('encryptedPassword', encryptedPasswordBase64);
+
+            if (this.registerData.profileImage) {
+                formData.append('profileImage', this.registerData.profileImage, this.registerData.profileImage.name);
+            }
+
+            try {
+                const response = await this.servicios.register(formData).toPromise();
+                console.log('Register Respuesta:', response);
+                this.closeModal('register');
+                this.router.navigate(['/']);
+            } catch (error) {
+                console.error('Error al registrar:', error);
+            }
+
+        } else {
+            alert('Las contraseñas no coinciden');
+        }
+    }
 }

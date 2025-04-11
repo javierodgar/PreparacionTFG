@@ -1,6 +1,7 @@
 <div id="container">
     <!-- Filter Container -->
     <div class="filter-container">
+      <h2>Filters</h2>
         <!-- Contenedor para input y trigger en fila -->
         <div class="search-row">
           <input 
@@ -10,7 +11,6 @@
             [(ngModel)]="filterValue" 
             (keydown)="onFilterKeydown($event)" 
           />
-          <div class="modal-trigger" (click)="openModal()">+</div>
         </div>
     
         <!-- Contenedor para radios debajo -->
@@ -59,57 +59,29 @@
         </div>
       }
       @for( post of filteredPosts; track post.id){
-        <div class="post">
-        <h3>{{ post.titulo }}</h3>
+        <div class="post" (click)="goToPost(post.id)">
+        <h3 >{{ post.titulo }}</h3>
         
         @if(post.imagen){
             <img  [src]="dataUrl + post.imagen" alt="Post Image" />
         }
         <p>{{ post.texto }}</p>
 
-        @if(post.hashtags){
-            <div  class="hashtags">{{ post.hashtags }}</div>
+        @if (post.formattedHashtags && post.formattedHashtags.length > 0) {
+          <div class="hashtags">
+            @for (hashtag of post.formattedHashtags; track $index) {
+              <span>#{{ hashtag }} </span>
+              @if (!$last) {
+                <span> </span>
+              }
+            }
+            </div>
         }
-        
+
       </div>
       }
       
     </div>
-    
-    <!-- Ventana modal -->
-    <div class="modal" *ngIf="showModal">
-    <div class="modal-content">
-      <span class="close" (click)="closeModal()">×</span>
-      <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
-        <label for="usuario">Usuario:</label>
-        <input type="text" id="usuario" formControlName="usuario" required />
-        <div *ngIf="postForm.get('usuario')?.errors?.['required'] && postForm.get('usuario')?.touched" class="error">
-          El usuario es obligatorio.
-        </div>
-
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" formControlName="titulo" required />
-        <div *ngIf="postForm.get('titulo')?.errors?.['required'] && postForm.get('titulo')?.touched" class="error">
-          El título es obligatorio.
-        </div>
-
-        <label for="texto">Texto:</label>
-        <textarea id="texto" formControlName="texto" required></textarea>
-        <div *ngIf="postForm.get('texto')?.errors?.['required'] && postForm.get('texto')?.touched" class="error">
-          El texto es obligatorio.
-        </div>
-
-        <label for="hashtags">Hashtags:</label>
-        <input type="text" id="hashtags" formControlName="hashtags" placeholder="#tag1 #tag2" />
-
-        <label for="imagen">Imagen (opcional):</label>
-        <input type="file" id="imagen" (change)="onFileChange($event)" accept="image/*" />
-
-        <button type="submit" [disabled]="!postForm.valid">Guardar</button>
-      </form>
-    </div>
-  </div>
-
 </div>
 
   

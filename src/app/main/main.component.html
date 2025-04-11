@@ -11,8 +11,8 @@
     <div class="sidebar">
         <div class="profile-pic" id="profilePic" (click)="showUser()"></div>
         <div class="nav-icons">
-            <div class="nav-icon" id="createPostBtn" (click)="showPosts()"><img src="/icons/libro.png" alt=""></div>
-            <div class="nav-icon" id="showPosts" ></div>
+            <div class="nav-icon" id="createPostBtn" (click)="showPosts()"><img src="/icons/libro.png" alt="icono de libro para mostrar todas las publicaciones"></div>
+            <div class="nav-icon" id="showPosts" (click)="openModal()"><img src="/icons/publicacion.png" alt="icono de mas para crear una nueva publicacion"></div>
             <div class="nav-icon" id="allUsers"></div>
             <div class="nav-icon"></div>
         </div>
@@ -39,30 +39,38 @@
         </div>
     </div>
 
-    <!-- Ventana modal para crear publicación -->
-    <div class="modal" id="postModal">
-        <div class="modal-content">
-            <span class="close" id="closeModal">&times;</span>
-            <h2>Crear Publicación</h2>
-            <form id="postForm">
-                <label for="postImage">Imagen (opcional):</label>
-                <input type="file" id="postImage" name="postImage" accept="image/*">
-
-                <label for="postTitle">Título:</label>
-                <input type="text" id="postTitle" name="postTitle" required>
-
-                <label for="postText">Texto:</label>
-                <textarea id="postText" name="postText" required></textarea>
-
-                <label for="postHashtags">Hashtags (separados por comas):</label>
-                <input type="text" id="postHashtags" name="postHashtags" placeholder="#ejemplo, #prueba">
-
-                <button type="submit">Publicar</button>
-            </form>
-        </div>
-    </div>
+    
 
     <!-- <script src="js/scriptPagPrincipal.js"></script> -->
     <!-- <script src="js/scriptUserProfile.js"></script> -->
 </body>
+
+<!-- Ventana modal para crear publicación -->
+<div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <span class="close" (click)="closeModal()">×</span>
+      <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" formControlName="titulo" required />
+        <div *ngIf="postForm.get('titulo')?.errors?.['required'] && postForm.get('titulo')?.touched" class="error">
+          El título es obligatorio.
+        </div>
+
+        <label for="texto">Texto:</label>
+        <textarea id="texto" formControlName="texto" required></textarea>
+        <div *ngIf="postForm.get('texto')?.errors?.['required'] && postForm.get('texto')?.touched" class="error">
+          El texto es obligatorio.
+        </div>
+
+        <label for="hashtags">Hashtags:</label>
+        <input type="text" id="hashtags" formControlName="hashtags" placeholder="#tag1 #tag2" />
+
+        <label for="imagen">Imagen (opcional):</label>
+        <input type="file" id="imagen" (change)="onFileChange($event)" accept="image/*" />
+
+        <button type="submit" [disabled]="!postForm.valid">Guardar</button>
+      </form>
+    </div>
+  </div>
 </html>
