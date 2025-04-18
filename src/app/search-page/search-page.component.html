@@ -1,0 +1,48 @@
+<div class="search-page">
+    <div class="search-controls">
+      <div class="filter-selector">
+        <label>Filtrar por:</label>
+        <div *ngFor="let option of filterOptions">
+          <input type="checkbox" [value]="option.value" [checked]="option.checked" (change)="onFilterChanged(option)">
+          <label>{{ option.name }}</label>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar..." [(ngModel)]="searchTerm">
+        <button (click)="onSearch()">Buscar</button>
+      </div>
+    </div>
+  
+    <div class="search-results">
+      <div *ngIf="loading">Cargando resultados...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+      <div *ngIf="searchResults.length === 0 && !loading && !error">No se encontraron resultados.</div>
+      <div *ngIf="searchResults.length > 0">
+        <h2>Resultados de la búsqueda:</h2>
+  
+        <div class="hashtag-results-container">
+          <div *ngFor="let result of searchResults" class="hashtag-item-container">
+            <div *ngIf="result.tipo === 'hashtag'" class="hashtag-item" (click)="consoleLog(result.nombre, 'hashtag')">
+              <h3>{{ result.nombre }}</h3>
+              <p>({{ result.conteo }} publicaciones)</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="other-results">
+          <div *ngFor="let result of searchResults" class="result-card-container">
+            <div *ngIf="result.tipo === 'publicacion'" class="result-card publicacion-card" (click)="consoleLog(result.id, 'publicacion')">
+              <h3>{{ result.titulo }}</h3>
+              <p>{{ result.texto | slice:0:100 }}...</p>
+            </div>
+          </div>
+          <div *ngFor="let result of searchResults" class="result-card-container">
+            <div *ngIf="result.tipo === 'usuario'" class="result-card usuario-card" (click)="consoleLog(result.nombre_usuario, 'usuario')">
+              <h3>Usuario: {{ result.nombre_usuario }}</h3>
+              <button (click)="stopEvent($event); consoleLog('almendra', 'follow')">Seguir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -134,5 +134,9 @@ export class MainComponent {
   showUser(){
     this.router.navigate(['main/user_info'])
   }
+
+  showSearch(){
+    this.router.navigate(['main/search'])
+  }
   
 }

@@ -2,16 +2,15 @@
 // archivo: data/update_user.php
 
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    http_response_code(405);
-    echo json_encode(["message" => "Método no permitido"]);
-    exit;
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200); // OK
+    exit; // Terminar ejecución ya que no se necesita procesar más
 }
-
 // Obtener datos del formulario (esperamos multipart/form-data)
 $username = $_POST["usuario"] ?? null;
 $newUsername = $_POST["usuarioNuevo"] ?? null;
@@ -46,7 +45,7 @@ if (isset($_FILES["profile_image"]) && $_FILES["profile_image"]["error"] === UPL
 
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "";
+$dbPassword = "root";
 $dbName = "RegistroUsuarios";
 
 

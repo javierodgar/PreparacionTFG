@@ -1,14 +1,19 @@
 <?php
 // archivo: data/get_profile_image.php
-
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With"); // Cabeceras específicas permitidas
 
 $jsonData = file_get_contents("php://input");
 $data = json_decode($jsonData, true);
 $username = $data['username'] ?? null;
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200); // OK
+    exit; // Terminar ejecución ya que no se necesita procesar más
+}
 if (empty($username)) {
     http_response_code(400);
     echo json_encode(["message" => "Debes proporcionar un nombre de usuario"]);
@@ -17,7 +22,7 @@ if (empty($username)) {
 
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "";
+$dbPassword = "root";
 $dbName = "RegistroUsuarios";
 
 try {

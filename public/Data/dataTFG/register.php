@@ -2,17 +2,21 @@
 // archivo: register.php
 
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
 header("Content-Type: application/json; charset=UTF-8"); // Esto puede ser application/json o dejarlo para que PHP lo determine
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
 // Conexión a la base de datos (mantener tu configuración)
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "";
+$dbPassword = "root";
 $dbName = "RegistroUsuarios";
-
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200); // OK
+    exit; // Terminar ejecución ya que no se necesita procesar más
+}
 try {
     $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
     if ($conn->connect_error) {

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ServiciosService {
-  private baseUrl = '/dataTFG/'; // Ajusta la URL según tu configuración
+  private baseUrl = 'http://localhost/dataTFG/'; // Ajusta la URL según tu configuración
 
   constructor(private http: HttpClient) { }
 
@@ -22,7 +22,8 @@ export class ServiciosService {
     try {
       const response = await this.http.post(
         `${this.baseUrl}dataGet.php`,
-        body
+        body,
+        { headers: this.getHeaders() }
       ).toPromise();
       return response;
     } catch (error) {
@@ -30,30 +31,6 @@ export class ServiciosService {
       return { message: 'Error en la solicitud', error };
     }
   }
-
-  // Nueva función: Registrar usuario
-  // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
-  //   const body = {
-  //     username,
-  //     firstName,
-  //     lastName,
-  //     lastName2,
-  //     city,
-  //     email,
-  //     encryptedPassword
-  //   };
-  //   try {
-  //     const response = await this.http.post(
-  //       `${this.baseUrl}register.php`,
-  //       body,
-  //       { headers: this.getHeaders() }
-  //     ).toPromise();
-  //     return response;
-  //   } catch (error) {
-  //     console.error('Error en register:', error);
-  //     return { message: 'Error en la solicitud', error };
-  //   }
-  // }
 
   register(formData: FormData): Observable<any> {
     return this.http.post(`${this.baseUrl}register.php`, formData);
@@ -108,4 +85,57 @@ export class ServiciosService {
     const params = { publicacion_id: publicacionId.toString() };
     return this.http.get<any>(`${this.baseUrl}get_likes_dislikes.php`, { params: params, headers: this.getHeaders() });
   }
+
+  deleteComment(comentarioId: number): Observable<any> {
+    const params = { comentario_id: comentarioId.toString() };
+    return this.http.delete(`${this.baseUrl}delete_comment.php`, { params: params, headers: this.getHeaders() });
+  }
+
+  updateComment(publicacionId: number, comentarioId: number, nuevoTexto: string): Observable<any> {
+    const body = {
+      publicacion_id: publicacionId,
+      comentario_id: comentarioId,
+      nuevo_texto: nuevoTexto
+    };
+    return this.http.put(`${this.baseUrl}update_comment.php`, body, { headers: this.getHeaders() });
+  }
+
+  search(searchTerm: string, filterOptions: string[]): Observable<any> {
+    let url = `${this.baseUrl}search.php?term=${encodeURIComponent(searchTerm)}`;
+
+    if (filterOptions && filterOptions.length > 0) {
+      url += `&filters=${encodeURIComponent(JSON.stringify(filterOptions))}`;
+    }
+
+    return this.http.get(url, { headers: this.getHeaders() });
+  }
+
+  getMatchingHashtags(query: string): Observable<any> {
+    const url = `${this.baseUrl}get_hashtags.php?query=${encodeURIComponent(query)}`;
+    return this.http.get(url);
+  }
+
+    // Nueva función: Registrar usuario
+  // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
+  //   const body = {
+  //     username,
+  //     firstName,
+  //     lastName,
+  //     lastName2,
+  //     city,
+  //     email,
+  //     encryptedPassword
+  //   };
+  //   try {
+  //     const response = await this.http.post(
+  //       `${this.baseUrl}register.php`,
+  //       body,
+  //       { headers: this.getHeaders() }
+  //     ).toPromise();
+  //     return response;
+  //   } catch (error) {
+  //     console.error('Error en register:', error);
+  //     return { message: 'Error en la solicitud', error };
+  //   }
+  // }
 }

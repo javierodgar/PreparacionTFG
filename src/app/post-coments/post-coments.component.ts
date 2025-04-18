@@ -15,16 +15,19 @@ export class PostComentsComponent implements OnInit, OnDestroy {
   title='';
   img='';
   text='';
-  hastagh='';
-  coments = '';
+  hastagh: any[] = [];
+  coments:any = [];
   likes=0;
   dislikes=0;
   publicacionConComentarios: any;
-  publicacionId: number | null = null;
-  dataUrl = '/dataTFG/';
+  publicacionId:any;
+  dataUrl = 'http://localhost/dataTFG/';
   errorLoading: boolean = false;
   newCommentText: string = ''; // Variable para el texto del nuevo comentario
-  username: any; // Valor de prueba, ¡REEMPLAZAR!
+  username: any; 
+  editingCommentId: number | null = null; // ID del comentario que se está editando
+  editedCommentText: string = ''; // Texto del comentario en edición
+
   private routeSubscription: Subscription | undefined;
 
   constructor(private route: ActivatedRoute, private serviciosService: ServiciosService) {}
@@ -50,12 +53,17 @@ export class PostComentsComponent implements OnInit, OnDestroy {
     if (this.publicacionId !== null) {
       this.serviciosService.getPublicationWithComments(this.publicacionId).subscribe(
         (data) => {
+          console.log(data);
           this.publicacionConComentarios = data;
           this.title = this.publicacionConComentarios.titulo;
           this.img = this.publicacionConComentarios.imagen;
           this.text = this.publicacionConComentarios.texto;
-          this.hastagh = this.publicacionConComentarios.hashtags;
-          this.coments = this.publicacionConComentarios.comentarios;
+          this.editingCommentId = null;
+
+          // Los hashtags ahora son un array directamente
+          this.hastagh = this.publicacionConComentarios.hashtags || [];
+
+          this.coments = this.publicacionConComentarios.comentarios || [];
           this.likes = this.publicacionConComentarios.total_likes;
           this.dislikes = this.publicacionConComentarios.total_dislikes;
           this.errorLoading = false;
@@ -66,6 +74,59 @@ export class PostComentsComponent implements OnInit, OnDestroy {
           this.publicacionConComentarios = null;
         }
       );
+    }
+  }
+
+  confirmDeleteComment(commentId: number): void {
+    console.log('ID del comentario a borrar:', commentId);
+    if (confirm('¿Estás seguro de que quieres borrar este comentario?')) {
+      this.deleteComment(commentId);
+    }
+  }
+  
+  deleteComment(commentId: number): void {
+    this.serviciosService.deleteComment(commentId)
+      .subscribe({
+        next: (response) => {
+          console.log('Comentario borrado:', response);
+          this.loadPublicationDetails(); // Recargar los comentarios después del borrado
+          alert('Comentario borrado exitosamente.');
+        },
+        error: (error) => {
+          console.error('Error al borrar el comentario:', error);
+          alert('Error al borrar el comentario.');
+        }
+      });
+  }
+
+  startEdit(comentario: any): void {
+    comentario.isEditing = true;
+  }
+
+  cancelEdit(comentario: any): void {
+    comentario.isEditing = false;
+    comentario.editedText = comentario.comentario_texto; // Revertir al texto original
+  }
+
+  saveEditedComment(comentario: any): void {
+    console.log('this.publicacionId en saveEditedComment:', this.publicacionId);
+  console.log('comentario.id en saveEditedComment:', comentario.comentario_id);
+  console.log('comentario.editedText en saveEditedComment:', comentario.editedText);
+    if (comentario.editedText.trim() !== '') {
+      this.serviciosService.updateComment(this.publicacionId, comentario.comentario_id, comentario.editedText)
+        .subscribe({
+          next: (response) => {
+            console.log('Comentario actualizado:', response);
+            this.loadPublicationDetails(); // Recargar comentarios
+            alert('Comentario actualizado exitosamente.');
+          },
+          error: (error) => {
+            console.error('Error al actualizar el comentario:', error);
+            alert('Error al actualizar el comentario.');
+          }
+        });
+    } else {
+      alert('Por favor, introduce un texto para el comentario.');
     }
   }
 

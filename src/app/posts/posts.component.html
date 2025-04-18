@@ -1,88 +1,120 @@
 <div id="container">
-    <!-- Filter Container -->
-    <div class="filter-container">
-      <h2>Filters</h2>
-        <!-- Contenedor para input y trigger en fila -->
-        <div class="search-row">
-          <input 
-            type="text" 
-            id="filterInput" 
-            placeholder="Buscar..." 
-            [(ngModel)]="filterValue" 
-            (keydown)="onFilterKeydown($event)" 
-          />
-        </div>
-    
-        <!-- Contenedor para radios debajo -->
-        <div class="radio-group">
-          <label>
-            <input 
-              type="radio" 
-              name="filterType" 
-              value="usuario" 
-              [(ngModel)]="filterType" 
-              (change)="onFilterTypeChange()" 
-              checked 
-            /> Autor
-          </label>
-          <label>
-            <input 
-              type="radio" 
-              name="filterType" 
-              value="titulo" 
-              [(ngModel)]="filterType" 
-              (change)="onFilterTypeChange()" 
-            /> Título
-          </label>
-          <label>
-            <input 
-              type="radio" 
-              name="filterType" 
-              value="hashtags" 
-              [(ngModel)]="filterType" 
-              (change)="onFilterTypeChange()" 
-            /> Hashtags
-          </label>
-        </div>
-      </div>
-  
-    <!-- Posts Container -->
-    <div id="postsContainer">
-      @if(filteredPosts.length === 0 && posts.length > 0){
-        <div >
-            <p>No se encontraron publicaciones.</p>
-        </div>
-      }
-      @if(posts.length === 0){
-        <div>
-            <p>No hay publicaciones disponibles.</p>
-        </div>
-      }
-      @for( post of filteredPosts; track post.id){
-        <div class="post" (click)="goToPost(post.id)">
-        <h3 >{{ post.titulo }}</h3>
-        
-        @if(post.imagen){
-            <img  [src]="dataUrl + post.imagen" alt="Post Image" />
-        }
-        <p>{{ post.texto }}</p>
-
-        @if (post.formattedHashtags && post.formattedHashtags.length > 0) {
-          <div class="hashtags">
-            @for (hashtag of post.formattedHashtags; track $index) {
-              <span>#{{ hashtag }} </span>
-              @if (!$last) {
-                <span> </span>
-              }
-            }
-            </div>
-        }
-
-      </div>
-      }
-      
+  <div class="filter-container">
+    <h2>Filters</h2>
+    <div class="search-row">
+      <input
+        type="text"
+        id="filterInput"
+        placeholder="Buscar..."
+        [(ngModel)]="filterValue"
+        (keydown)="onFilterKeydown($event)"
+      />
     </div>
+
+    <div class="radio-group">
+      <label>
+        <input
+          type="radio"
+          name="filterType"
+          value="usuario"
+          [(ngModel)]="filterType"
+          (change)="onFilterTypeChange()"
+          checked
+        /> Autor
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="filterType"
+          value="titulo"
+          [(ngModel)]="filterType"
+          (change)="onFilterTypeChange()"
+        /> Título
+      </label>
+      <label>
+        <input
+          type="radio"
+          name="filterType"
+          value="hashtags"
+          [(ngModel)]="filterType"
+          (change)="onFilterTypeChange()"
+        /> Hashtags
+      </label>
+    </div>
+  </div>
+
+  <div id="postsContainer">
+    @if(filteredPosts.length === 0 && posts.length > 0){
+    <div>
+      <p>No se encontraron publicaciones.</p>
+    </div>
+    }
+    @if(posts.length === 0){
+    <div>
+      <p>No hay publicaciones disponibles.</p>
+    </div>
+    }
+    @for( post of filteredPosts; track post.id){
+    <div class="post" (click)="goToPost(post.id)">
+      <h3>{{ post.titulo }}</h3>
+
+      @if(post.imagen){
+      <img  [src]="dataUrl + post.imagen" alt="Post Image" />
+      }
+      <p>{{ post.texto }}</p>
+
+      @if (post.formattedHashtags && post.formattedHashtags.length > 0) {
+      <div class="hashtags">
+        @for (hashtag of post.formattedHashtags; track $index) {
+        <span>#{{ hashtag }} </span>
+        @if (!$last) {
+        <span> </span>
+        }
+        }
+      </div>
+      }
+
+    </div>
+    }
+
+  </div>
 </div>
 
-  
-  
+<div *ngIf="showModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" (click)="closeModal()">&times;</span>
+    <h2>Crear Nueva Publicación</h2>
+    <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" formControlName="titulo" required>
+        <div *ngIf="postForm.controls['titulo'].invalid && (postForm.controls['titulo'].dirty || postForm.controls['titulo'].touched)">
+          <small class="error-message" *ngIf="postForm.controls['titulo'].errors?.['required']">El título es requerido.</small>
+        </div>
+      </div>
+      <div>
+        <label for="texto">Texto:</label>
+        <textarea id="texto" formControlName="texto" required></textarea>
+        <div *ngIf="postForm.controls['texto'].invalid && (postForm.controls['texto'].dirty || postForm.controls['texto'].touched)">
+          <small class="error-message" *ngIf="postForm.controls['texto'].errors?.['required']">El texto es requerido.</small>
+        </div>
+      </div>
+      <div>
+        <label for="hashtags">Hashtags:</label>
+        <ng-select
+          [multiple]="true"
+          [addTag]="true"
+          formControlName="hashtags"
+          placeholder="Escribe tus hashtags y presiona Enter"
+          id="hashtags"
+        >
+        </ng-select>
+      </div>
+      <div>
+        <label for="imagen">Imagen:</label>
+        <input type="file" id="imagen" (change)="onFileChange($event)">
+      </div>
+      <button type="submit" [disabled]="postForm.invalid">Publicar</button>
+    </form>
+  </div>
+</div>

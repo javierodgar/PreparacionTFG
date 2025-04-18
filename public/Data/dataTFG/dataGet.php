@@ -4,6 +4,8 @@
 // Configuración de cabeceras para permitir solicitudes CORS
 // Cabeceras CORS lo más permisivas posible
 header("Access-Control-Allow-Origin: *"); // Permite cualquier origen
+header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
+
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
 header("Access-Control-Max-Age: 86400"); // Tiempo de caché extendido (24 horas)
@@ -14,6 +16,10 @@ header("Access-Control-Expose-Headers: *"); // Expone todas las cabeceras en la 
 $jsonData = file_get_contents("php://input");
 $data = json_decode($jsonData, true); // Decodificar JSON a un array asociativo
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200); // OK
+    exit; // Terminar ejecución ya que no se necesita procesar más
+}
 // Verificar si se recibieron datos JSON válidos
 if ($data === null) {
     http_response_code(400); // Bad Request
@@ -34,7 +40,7 @@ if (empty($username)) {
 // Conexión a la base de datos
 $host = "localhost"; // Ajusta según tu configuración
 $dbUsername = "root"; // Ajusta según tu usuario de BD
-$dbPassword = "";    // Ajusta según tu contraseña de BD
+$dbPassword = "root";    // Ajusta según tu contraseña de BD
 $dbName = "RegistroUsuarios"; // Nombre de la base de datos
 
 try {

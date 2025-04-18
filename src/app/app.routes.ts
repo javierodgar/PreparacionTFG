@@ -5,6 +5,9 @@ import { PostsComponent } from './posts/posts.component';
 import { ErrorComponent } from './error/error.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { PostComentsComponent } from './post-coments/post-coments.component';
+import { SearchPageComponent } from './search-page/search-page.component';
+import { UserGeneralComponent } from './user-general/user-general.component';
+import { HashtagPostsComponent } from './hashtag-posts/hashtag-posts.component';
 
 export const routes: Routes = [
     {
@@ -17,7 +20,10 @@ export const routes: Routes = [
         children: [
             { path: 'posts', component: PostsComponent },
             {path: 'big_post/:id', component: PostComentsComponent},
-            { path: 'user_info', component: UserProfileComponent}
+            { path: 'user_info', component: UserProfileComponent},
+            {path: 'user_general/:username', component:UserGeneralComponent},
+            {path: 'search', component: SearchPageComponent},
+            {path: 'hastag_posts/:hashtag', component: HashtagPostsComponent},
         ]
     },
     {

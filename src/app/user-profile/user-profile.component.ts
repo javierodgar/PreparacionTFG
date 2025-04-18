@@ -14,7 +14,7 @@ import { PostUpdateService } from '../post-update.service';
 })
 export class UserProfileComponent {
   //declaracion de variables necesarias para este componente
-  dataUrl = 'dataTFG/';
+  dataUrl = 'http://localhost/dataTFG/';
   userData: any = null;
   posts: any[] = [];
   followersCount: number = 0;
@@ -262,5 +262,9 @@ export class UserProfileComponent {
    */
   onUnfollow() {
     console.log('Dejar de seguir');
+  }
+
+  goToPost(id: number) {
+    this.router.navigate(['main/big_post', id]);
   }
 }

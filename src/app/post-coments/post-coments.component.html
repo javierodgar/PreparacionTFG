@@ -6,7 +6,9 @@
   <p class="detalle-texto">{{ text }}</p>
   @if (hastagh) {
     <div class="detalle-hashtags">
-      {{ hastagh }}
+      @for (tag of hastagh; track $index) {
+        <span>#{{ tag }} </span>
+      }
     </div>
   }
 
@@ -26,8 +28,18 @@
   @if(coments !== '' && coments.length > 0){
     @for (comentario of publicacionConComentarios.comentarios; track comentario.comentario_id) {
         <div class="comentario">
-          <p><strong>{{ comentario.nombre_usuario_comentario }}:</strong> {{ comentario.comentario_texto }}</p>
-          <small>{{ comentario.comentario_fecha_creacion }}</small>
+          @if (comentario.isEditing) {
+            <textarea [(ngModel)]="comentario.editedText" placeholder="Editar comentario">{{ comentario.comentario_texto }}</textarea>
+            <button (click)="saveEditedComment(comentario)">Guardar</button>
+            <button (click)="cancelEdit(comentario)">Cancelar</button>
+          } @else {
+            <p><strong>{{ comentario.nombre_usuario_comentario }}:</strong> {{ comentario.comentario_texto }}</p>
+            <small>{{ comentario.comentario_fecha_creacion }}</small>
+            @if (comentario.nombre_usuario_comentario === username) {
+              <button (click)="startEdit(comentario)">Editar</button>
+              <button (click)="confirmDeleteComment(comentario.comentario_id)">Borrar</button>
+            }
+          }
         </div>
       }
   }

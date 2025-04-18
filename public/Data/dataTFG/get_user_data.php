@@ -2,8 +2,16 @@
 // archivo: data/get_user_data.php
 
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:4200");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 $jsonData = file_get_contents("php://input");
 $data = json_decode($jsonData, true);
@@ -17,7 +25,7 @@ if (empty($username)) {
 
 $host = "localhost";
 $dbUsername = "root";
-$dbPassword = "";
+$dbPassword = "root";
 $dbName = "RegistroUsuarios";
 
 try {
@@ -41,14 +49,31 @@ try {
         exit;
     }
 
-    // Obtener publicaciones del usuario
-    $stmt = $conn->prepare("SELECT id, imagen, titulo, texto, hashtags FROM Publicaciones WHERE usuario = ?");
+    // Obtener publicaciones del usuario y sus hashtags
+    $stmt = $conn->prepare("SELECT id, imagen, titulo, texto FROM Publicaciones WHERE usuario = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $postsResult = $stmt->get_result();
     $posts = [];
-    while ($row = $postsResult->fetch_assoc()) {
-        $posts[] = $row;
+    while ($postRow = $postsResult->fetch_assoc()) {
+        $postId = $postRow['id'];
+
+        $hashtagsStmt = $conn->prepare("
+            SELECT h.nombre
+            FROM Hashtags h
+            INNER JOIN PublicacionHashtag ph ON h.id = ph.hashtag_id
+            WHERE ph.publicacion_id = ?
+        ");
+        $hashtagsStmt->bind_param("i", $postId);
+        $hashtagsStmt->execute();
+        $hashtagsResult = $hashtagsStmt->get_result();
+        $hashtags = [];
+        while ($hashtagRow = $hashtagsResult->fetch_assoc()) {
+            $hashtags[] = $hashtagRow['nombre'];
+        }
+        $hashtagsStmt->close();
+
+        $posts[] = array_merge($postRow, ['hashtags' => $hashtags]);
     }
 
     // Obtener usuarios a los que sigue (seguidos)

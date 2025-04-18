@@ -62,6 +62,21 @@ CREATE TABLE IF NOT EXISTS LikesDislikes (
     UNIQUE KEY unique_like_dislike (publicacion_id, usuario_id)
 );
 
+-- Crear la tabla Hashtags
+CREATE TABLE IF NOT EXISTS Hashtags (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Crear la tabla de relación PublicacionHashtag
+CREATE TABLE IF NOT EXISTS PublicacionHashtag (
+    publicacion_id INT NOT NULL,
+    hashtag_id INT NOT NULL,
+    PRIMARY KEY (publicacion_id, hashtag_id),
+    FOREIGN KEY (publicacion_id) REFERENCES Publicaciones(id) ON DELETE CASCADE,
+    FOREIGN KEY (hashtag_id) REFERENCES Hashtags(id) ON DELETE CASCADE
+);
+
 -- ALTER TABLE publicaciones
 -- ADD CONSTRAINT fk_usuario_publicaciones
 -- FOREIGN KEY (usuario) REFERENCES Usuarios(usuario)
