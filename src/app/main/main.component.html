@@ -9,7 +9,7 @@
 <body>
     <!-- Barra de navegación izquierda -->
     <div class="sidebar">
-        <div class="profile-pic" id="profilePic" (click)="showUser()"></div>
+        <div class="profile-pic" id="profilePic" (click)="showUser()" [style.backgroundImage]="profileImageUrl ? 'url(' + profileImageUrl + ')' : ''"></div>
         <div class="nav-icons">
             <div class="nav-icon" id="createPostBtn" (click)="showPosts()"><img src="/icons/libro.png" alt="icono de libro para mostrar todas las publicaciones"></div>
             <div class="nav-icon" id="showPosts" (click)="openModal()"><img src="/icons/publicacion.png" alt="icono de mas para crear una nueva publicacion"></div>

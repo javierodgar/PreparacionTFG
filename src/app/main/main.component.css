@@ -23,11 +23,14 @@ body {
 }
 
 .profile-pic {
-    width: 80px;
-    height: 80px;
-    background-color: #ccc;
-    border-radius: 50%;
-    margin-bottom: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #555;
+  margin-bottom: 20px;
+  cursor: pointer;
+  background-size: cover; /* Asegura que la imagen cubra el círculo */
+  background-position: center; /* Centra la imagen dentro del círculo */
 }
 
 .nav-icons {

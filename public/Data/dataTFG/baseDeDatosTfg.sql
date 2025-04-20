@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS Publicaciones (
     titulo VARCHAR(100) NOT NULL,
     texto TEXT NOT NULL,
     hashtags VARCHAR(255),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora de creación (automática)
     FOREIGN KEY (usuario) REFERENCES Usuarios(usuario) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

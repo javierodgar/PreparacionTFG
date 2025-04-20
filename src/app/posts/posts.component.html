@@ -59,9 +59,14 @@
       <h3>{{ post.titulo }}</h3>
 
       @if(post.imagen){
-      <img  [src]="dataUrl + post.imagen" alt="Post Image" />
+      <img  [src]="dataUrl + post.imagen" alt="Post Image" />
       }
       <p>{{ post.texto }}</p>
+
+      <div class="post-actions">
+        <span>Likes: {{ post.likes_count || 0 }}</span>
+        <span>Dislikes: {{ post.dislikes_count || 0 }}</span>
+        </div>
 
       @if (post.formattedHashtags && post.formattedHashtags.length > 0) {
       <div class="hashtags">
@@ -118,3 +123,39 @@
     </form>
   </div>
 </div>
+
+<style>
+  /* Estilos existentes */
+  .post {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .post h3 {
+    margin-top: 0;
+  }
+
+  .post img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .hashtags {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  .post-actions {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #333;
+  }
+
+  .post-actions span {
+    margin-right: 10px;
+  }
+</style>

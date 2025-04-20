@@ -117,8 +117,11 @@ export class PostsComponent implements OnInit, OnDestroy {
       formData.append('texto', this.postForm.get('texto')!.value!);
 
       const hashtagsControl = this.postForm.get('hashtags');
-      if (hashtagsControl && hashtagsControl.value) {
-        formData.append('hashtags', hashtagsControl.value.join(','));
+      if (hashtagsControl && hashtagsControl.value && Array.isArray(hashtagsControl.value)) {
+        const formattedHashtags = hashtagsControl.value.map((hashtag: string) => {
+          return hashtag.startsWith('#') ? hashtag : `#${hashtag}`;
+        });
+        formData.append('hashtags', formattedHashtags.join(','));
       } else {
         formData.append('hashtags', '');
       }

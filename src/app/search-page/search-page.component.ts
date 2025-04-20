@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importa CommonModule
-import { ServiciosService } from '../servicios.service';
-import { FormsModule } from '@angular/forms'; // Importa FormsModule
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ServiciosService } from '../servicios.service'; // Importa el servicio
+
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-search-page',
@@ -10,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './search-page.component.html',
   styleUrl: './search-page.component.css'
 })
-export class SearchPageComponent implements OnInit{
+export class SearchPageComponent implements OnInit {
   searchTerm: string = '';
   filterOptions = [
     { name: 'Publicaciones', value: 'publicaciones', checked: false },
@@ -18,9 +20,15 @@ export class SearchPageComponent implements OnInit{
     { name: 'Usuarios', value: 'usuarios', checked: false }
   ];
   searchResults: any[] = [];
-  topHashtags: any[] = []; // Array para los hashtags superiores
+  topHashtags: any[] = [];
   loading: boolean = false;
   error: string = '';
+  sortBy: string = 'default'; // Opción de ordenamiento por defecto
+  sortOptions = [
+    { name: 'Por defecto', value: 'default' },
+    { name: 'Más Likes', value: 'likes' },
+    { name: 'Más Dislikes', value: 'dislikes' }
+  ];
 
   constructor(private searchService: ServiciosService, private router: Router) { }
 
@@ -29,10 +37,10 @@ export class SearchPageComponent implements OnInit{
   }
 
   loadTopHashtags() {
-    this.searchService.search('', ['hashtags']).subscribe({
+    this.searchService.searchHashtags('').subscribe({
       next: (data: any[]) => {
         this.topHashtags = data.filter((result: any) => result.tipo === 'hashtag')
-                                  .sort((a: any, b: any) => b.conteo - a.conteo);
+                                .sort((a: any, b: any) => b.conteo - a.conteo);
       },
       error: (err) => {
         console.error('Error al cargar hashtags:', err);
@@ -42,6 +50,11 @@ export class SearchPageComponent implements OnInit{
 
   onFilterChanged(option: any) {
     option.checked = !option.checked;
+  }
+
+  onSortChanged(event: any) {
+    this.sortBy = (event.target as HTMLSelectElement).value;
+    this.onSearch(); // Llama a la búsqueda automáticamente al cambiar el orden
   }
 
   onSearch() {
@@ -56,9 +69,25 @@ export class SearchPageComponent implements OnInit{
 
     this.loading = true;
     this.error = '';
-    this.searchService.search(this.searchTerm, selectedFilters).subscribe({
-      next: (data: any[]) => {
-        this.searchResults = data;
+    this.searchResults = []; // Limpiar resultados anteriores
+
+    const searchCalls: Observable<any>[] = [];
+
+    if (selectedFilters.includes('publicaciones') || selectedFilters.length === 0) {
+      searchCalls.push(this.searchService.searchPublications(this.searchTerm, this.sortBy));
+    }
+    if (selectedFilters.includes('hashtags')) {
+      searchCalls.push(this.searchService.searchHashtags(this.searchTerm));
+    }
+    if (selectedFilters.includes('usuarios')) {
+      searchCalls.push(this.searchService.searchUsers(this.searchTerm));
+    }
+
+    forkJoin(searchCalls).subscribe({
+      next: (results: any[]) => {
+        results.forEach(resultArray => {
+          this.searchResults = [...this.searchResults, ...resultArray];
+        });
         this.loading = false;
       },
       error: (err) => {
@@ -73,7 +102,7 @@ export class SearchPageComponent implements OnInit{
   consoleLog(value: any, type: string) {
     if (type === 'hashtag') {
       console.log('Hashtag clicado:', value);
-      this.router.navigate(['main/hastag_posts', value]); // Navega al componente
+      this.router.navigate(['main/hastag_posts', value]);
     } else if (type === 'publicacion') {
       console.log('Publicación clicada (ID):', value);
       this.goToPost(value);
@@ -96,6 +125,4 @@ export class SearchPageComponent implements OnInit{
   showUserGeneral(username: string) {
     this.router.navigate(['main/user_general', username]);
   }
-
 }
-

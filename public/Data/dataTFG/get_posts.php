@@ -27,15 +27,18 @@ try {
         exit;
     }
 
-    // Consulta para obtener todas las publicaciones
+    // Consulta para obtener todas las publicaciones con el número de likes y dislikes
     $stmt = $conn->prepare("
         SELECT
             p.id,
             p.usuario,
             p.imagen,
             p.titulo,
-            p.texto
-        FROM Publicaciones p ORder by p.fecha_creacion DESC
+            p.texto,
+            (SELECT COUNT(*) FROM LikesDislikes ld WHERE ld.publicacion_id = p.id AND ld.tipo = 'like') AS likes_count,
+            (SELECT COUNT(*) FROM LikesDislikes ld WHERE ld.publicacion_id = p.id AND ld.tipo = 'dislike') AS dislikes_count
+        FROM Publicaciones p
+        ORDER BY p.fecha_creacion DESC
     ");
     $stmt->execute();
     $result = $stmt->get_result();
@@ -67,7 +70,9 @@ try {
             "imagen" => $row["imagen"],
             "titulo" => $row["titulo"],
             "texto" => $row["texto"],
-            "hashtags" => $hashtags // Array de nombres de hashtags
+            "hashtags" => $hashtags, // Array de nombres de hashtags
+            "likes_count" => $row["likes_count"], // Número de likes
+            "dislikes_count" => $row["dislikes_count"] // Número de dislikes
         ];
 
         $hashtags_stmt->close();

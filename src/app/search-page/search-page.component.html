@@ -1,48 +1,76 @@
 <div class="search-page">
-    <div class="search-controls">
+  <div class="search-controls">
       <div class="filter-selector">
-        <label>Filtrar por:</label>
-        <div *ngFor="let option of filterOptions">
-          <input type="checkbox" [value]="option.value" [checked]="option.checked" (change)="onFilterChanged(option)">
-          <label>{{ option.name }}</label>
-        </div>
+          <label>Filtrar por:</label>
+          <div *ngFor="let option of filterOptions">
+              <input type="checkbox" [value]="option.value" [checked]="option.checked" (change)="onFilterChanged(option)">
+              <label>{{ option.name }}</label>
+          </div>
       </div>
       <div class="search-bar">
-        <input type="text" placeholder="Buscar..." [(ngModel)]="searchTerm">
-        <button (click)="onSearch()">Buscar</button>
+          <input type="text" placeholder="Buscar..." [(ngModel)]="searchTerm">
+          <button (click)="onSearch()">Buscar</button>
       </div>
-    </div>
-  
-    <div class="search-results">
+  </div>
+
+  <div class="sort-selector">
+      <label for="sortBy">Ordenar publicaciones por:</label>
+      <select id="sortBy" (change)="onSortChanged($event)">
+          <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.name }}</option>
+      </select>
+  </div>
+
+  <div class="search-results">
       <div *ngIf="loading">Cargando resultados...</div>
       <div *ngIf="error" class="error">{{ error }}</div>
       <div *ngIf="searchResults.length === 0 && !loading && !error">No se encontraron resultados.</div>
       <div *ngIf="searchResults.length > 0">
-        <h2>Resultados de la búsqueda:</h2>
-  
-        <div class="hashtag-results-container">
-          <div *ngFor="let result of searchResults" class="hashtag-item-container">
-            <div *ngIf="result.tipo === 'hashtag'" class="hashtag-item" (click)="consoleLog(result.nombre, 'hashtag')">
-              <h3>{{ result.nombre }}</h3>
-              <p>({{ result.conteo }} publicaciones)</p>
-            </div>
+          <h2>Resultados de la búsqueda:</h2>
+
+          <div class="hashtag-results-container">
+              <div *ngFor="let result of searchResults" class="hashtag-item-container">
+                  <div *ngIf="result.tipo === 'hashtag'" class="hashtag-item" (click)="consoleLog(result.nombre, 'hashtag')">
+                      <h3>{{ result.nombre }}</h3>
+                      <p>({{ result.conteo }} publicaciones)</p>
+                  </div>
+              </div>
           </div>
-        </div>
-  
-        <div class="other-results">
-          <div *ngFor="let result of searchResults" class="result-card-container">
-            <div *ngIf="result.tipo === 'publicacion'" class="result-card publicacion-card" (click)="consoleLog(result.id, 'publicacion')">
-              <h3>{{ result.titulo }}</h3>
-              <p>{{ result.texto | slice:0:100 }}...</p>
-            </div>
+
+          <div class="other-results">
+              <div *ngFor="let result of searchResults" class="result-card-container">
+                  <div *ngIf="result.tipo === 'publicacion'" class="result-card publicacion-card" (click)="consoleLog(result.id, 'publicacion')">
+                      <h3>{{ result.titulo }}</h3>
+                      <p>{{ result.texto | slice:0:100 }}...</p>
+                      <p>Likes: {{ result.likes_count || 0 }} | Dislikes: {{ result.dislikes_count || 0 }}</p>
+                  </div>
+              </div>
+              <div *ngFor="let result of searchResults" class="result-card-container">
+                  <div *ngIf="result.tipo === 'usuario'" class="result-card usuario-card" (click)="consoleLog(result.nombre_usuario, 'usuario')">
+                      <h3>Usuario: {{ result.nombre_usuario }}</h3>
+                      <button (click)="stopEvent($event); consoleLog('almendra', 'follow')">Seguir</button>
+                  </div>
+              </div>
           </div>
-          <div *ngFor="let result of searchResults" class="result-card-container">
-            <div *ngIf="result.tipo === 'usuario'" class="result-card usuario-card" (click)="consoleLog(result.nombre_usuario, 'usuario')">
-              <h3>Usuario: {{ result.nombre_usuario }}</h3>
-              <button (click)="stopEvent($event); consoleLog('almendra', 'follow')">Seguir</button>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
   </div>
+</div>
+
+<style>
+/* Estilos adicionales para el selector de ordenamiento */
+.sort-selector {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.sort-selector label {
+  margin-right: 10px;
+}
+
+.sort-selector select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+</style>

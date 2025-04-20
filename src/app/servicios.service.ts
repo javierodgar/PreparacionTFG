@@ -100,6 +100,30 @@ export class ServiciosService {
     return this.http.put(`${this.baseUrl}update_comment.php`, body, { headers: this.getHeaders() });
   }
 
+  searchPublications(searchTerm: string, sortBy: string = 'default'): Observable<any[]> {
+    let url = `${this.baseUrl}search_publications.php?term=${encodeURIComponent(searchTerm)}&sortBy=${sortBy}`;
+    return this.http.get<any[]>(url, { headers: this.getHeaders() });
+  }
+
+  searchHashtags(searchTerm: string): Observable<any[]> {
+    const url = `${this.baseUrl}search_hashtags.php?term=${encodeURIComponent(searchTerm)}`;
+    return this.http.get<any[]>(url, { headers: this.getHeaders() });
+  }
+
+  getTopHashtags(): Observable<any[]> {
+    const url = `${this.baseUrl}search_hashtags.php?term=`; // Para obtener todos y luego ordenar
+    return this.http.get<any[]>(url, { headers: this.getHeaders() });
+  }
+
+  searchUsers(searchTerm: string): Observable<any[]> {
+    const url = `${this.baseUrl}search_users.php?term=${encodeURIComponent(searchTerm)}`;
+    return this.http.get<any[]>(url, { headers: this.getHeaders() });
+  }
+
+  obtenerImagenPerfil(username: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}get_profile_image.php`, { username });
+  }
+
   search(searchTerm: string, filterOptions: string[]): Observable<any> {
     let url = `${this.baseUrl}search.php?term=${encodeURIComponent(searchTerm)}`;
 

@@ -8,7 +8,7 @@ import { PostUpdateService } from '../post-update.service';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -21,28 +21,31 @@ export class MainComponent {
   filterType: string = 'usuario'; // Tipo de filtro por defecto
   showModal: boolean = false; //control para mostrar modal
   username: string | null = null;
+  profileImageUrl: string | null = null; // Variable para almacenar la URL de la imagen de perfil
+  errorMessageProfileImage: string | null = null; // Variable para el mensaje de error de la imagen de perfil
   // Formulario para crear publicaciones
   postForm = new FormGroup({
     titulo: new FormControl('', [Validators.required]),
     texto: new FormControl('', [Validators.required]),
     hashtags: new FormControl(''),
-    imagen: new FormControl<File |null>(null)
+    imagen: new FormControl<File | null>(null)
   });
 
 
-  
   constructor(
-    private router: Router, 
-    private http: HttpClient, 
+    private router: Router,
+    private http: HttpClient,
     private servicios: ServiciosService,
-    private postUpdateService: PostUpdateService 
+    private postUpdateService: PostUpdateService
   ) { // Inyecta el servicio) {
     this.username = this.getCookie('username');
-    if(this.username == null){
+    if (this.username == null) {
       this.router.navigate(['/']);
+    } else {
+      this.obtenerImagenPerfil(); // Llama a la función al inicializar si hay un usuario logueado
     }
   }
-  
+
   /**
    * Gets the value of a cookie with the given name.
    * Returns null if the cookie does not exist.
@@ -66,7 +69,7 @@ export class MainComponent {
   }
 
 
-  closeModal(){
+  closeModal() {
     this.showModal = false;
     this.postForm.reset();
   }
@@ -88,7 +91,7 @@ export class MainComponent {
    * Si el formulario no es válido, muestra el error en la consola.
    */
   onSubmit() {
-    if(!this.username){
+    if (!this.username) {
       alert('No hay usuario logeado. Por favor, inicia sesión.');
       this.router.navigate(['']);
     }
@@ -124,19 +127,43 @@ export class MainComponent {
   /**
    * Shows the posts page.
    */
-  showPosts(){
+  showPosts() {
     this.router.navigate(['main/posts']);
   }
 
   /**
    * Navigates to the user information page.
    */
-  showUser(){
+  showUser() {
     this.router.navigate(['main/user_info'])
   }
 
-  showSearch(){
+  showSearch() {
     this.router.navigate(['main/search'])
   }
-  
+
+  obtenerImagenPerfil(): void {
+    if (this.username) {
+      this.servicios.obtenerImagenPerfil(this.username).subscribe({
+        next: (data) => {
+          if (data && data.profile_image) {
+            this.profileImageUrl = 'http://localhost/dataTFG/' + data.profile_image;
+            this.errorMessageProfileImage = null;
+            console.log('URL de la imagen de perfil:', this.profileImageUrl);
+          } else {
+            this.profileImageUrl = null;
+            this.errorMessageProfileImage = data?.message || 'No se encontró la imagen de perfil.';
+            console.log(this.errorMessageProfileImage);
+          }
+        },
+        error: (error) => {
+          console.error('Error al obtener la imagen de perfil:', error);
+          this.profileImageUrl = null;
+          this.errorMessageProfileImage = 'Error al conectar con el servidor.';
+        }
+      });
+    } else {
+      console.log('No hay username disponible para obtener la imagen de perfil.');
+    }
+  }
 }

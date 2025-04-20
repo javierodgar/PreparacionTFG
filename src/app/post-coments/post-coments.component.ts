@@ -152,7 +152,7 @@ export class PostComentsComponent implements OnInit, OnDestroy {
 
   onLikeButtonClick(): void {
     if (this.publicacionId) {
-      this.serviciosService.likeDislikePost(this.publicacionId, 'asd', 'like')
+      this.serviciosService.likeDislikePost(this.publicacionId, this.username, 'like')
         .subscribe({
           next: (response) => {
             console.log('Like:', response);
@@ -172,7 +172,7 @@ export class PostComentsComponent implements OnInit, OnDestroy {
 
   onDislikeButtonClick(): void {
     if (this.publicacionId) {
-      this.serviciosService.likeDislikePost(this.publicacionId, 'asd', 'dislike')
+      this.serviciosService.likeDislikePost(this.publicacionId, this.username, 'dislike')
         .subscribe({
           next: (response) => {
             console.log('Dislike:', response);
