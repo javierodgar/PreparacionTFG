@@ -1,18 +1,44 @@
-<div class="container">
-    <h1>Publicaciones con el hashtag: #{{ hashtag }}</h1>
-  
-    <div class="post-list">
-      <div *ngIf="loading">Cargando publicaciones...</div>
-      <div *ngIf="error" class="error">{{ error }}</div>
-      <div *ngIf="posts.length === 0 && !loading && !error">No se encontraron publicaciones con este hashtag.</div>
-      <div *ngFor="let post of posts" class="post-item">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.excerpt }}</p>
-        <a [routerLink]="['/main/big_post', post.id]">Leer más</a>
-        <div *ngIf="post.hashtags && post.hashtags.length > 0" class="post-hashtags">
-          Etiquetas:
-          <span *ngFor="let tag of post.hashtags" class="hashtag">#{{ tag }}</span>
+<div class="container mt-4">
+  <h1>Publicaciones con el hashtag: #{{ hashtag }}</h1>
+
+  <div class="post-list">
+    <div *ngIf="loading" class="alert alert-info" role="alert">
+      Cargando publicaciones...
+    </div>
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      {{ error }}
+    </div>
+    <div *ngIf="posts.length === 0 && !loading && !error" class="alert alert-warning" role="alert">
+      No se encontraron publicaciones con este hashtag.
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" *ngIf="posts.length > 0 && !loading && !error">
+      <div class="col" *ngFor="let post of posts; trackBy: trackById">
+        <div class="card h-100">
+          <img *ngIf="post.imagen" [src]="dataUrl + post.imagen" class="card-img-top" alt="{{ post.titulo }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ post.titulo }}</h5>
+            <p class="card-text">{{ post.texto }}</p>
+            <p class="card-text">
+              <small class="text-muted">Publicado por: {{ post.usuario }}</small><br>
+              <small class="text-muted">Fecha: {{ post.fecha_creacion | date:'dd/MM/yyyy HH:mm' }}</small>
+            </p>
+            <p class="card-text" *ngIf="post.hashtags && post.hashtags.length > 0">
+              <strong>Etiquetas:</strong>
+              <span *ngFor="let tag of post.hashtags; let last = last" class="hashtag">
+                <a [routerLink]="['/hashtag', tag]">#{{ tag }}</a>{{ !last ? ', ' : '' }}
+              </span>
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+              <a [routerLink]="['/main/big_post', post.id]" class="btn btn-primary btn-sm">Leer más</a>
+              <div>
+                <small class="text-muted">Likes: {{ post.total_likes || 0 }}</small> |
+                <small class="text-muted">Dislikes: {{ post.total_dislikes || 0 }}</small>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</div>

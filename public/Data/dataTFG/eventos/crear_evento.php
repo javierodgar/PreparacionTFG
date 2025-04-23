@@ -17,6 +17,8 @@ try {
     $direccion = isset($_POST['direccion']) ? $_POST['direccion'] : '';
     $fecha_inicio = isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : '';
     $fecha_fin = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : '';
+    $latitud = isset($_POST['latitud']) ? $_POST['latitud'] : null;
+    $longitud = isset($_POST['longitud']) ? $_POST['longitud'] : null;
     $usuario_creador_id_valor = 1; // **TODO: Obtener el ID del usuario autenticado**
 
     // **Implementar la lógica para guardar la imagen de portada si se subió un archivo**
@@ -61,8 +63,8 @@ try {
         exit;
     }
 
-    $query = "INSERT INTO Eventos (titulo, descripcion, categoria, imagen_portada, direccion, fecha_inicio, fecha_fin, usuario_creador_id)
-              VALUES (:titulo, :descripcion, :categoria, :imagen_portada, :direccion, :fecha_inicio, :fecha_fin, :usuario_creador_id)";
+    $query = "INSERT INTO Eventos (titulo, descripcion, categoria, imagen_portada, direccion, fecha_inicio, fecha_fin, usuario_creador_id, coordenadas)
+              VALUES (:titulo, :descripcion, :categoria, :imagen_portada, :direccion, :fecha_inicio, :fecha_fin, :usuario_creador_id, ST_GeomFromText(:coordenadas_point))";
 
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':titulo', $titulo);
@@ -73,6 +75,13 @@ try {
     $stmt->bindParam(':fecha_inicio', $fecha_inicio);
     $stmt->bindParam(':fecha_fin', $fecha_fin);
     $stmt->bindParam(':usuario_creador_id', $usuario_creador_id_valor, PDO::PARAM_INT);
+
+    // Crear el string para la función ST_GeomFromText
+    $coordenadas_point_string = null;
+    if ($latitud !== null && $longitud !== null) {
+        $coordenadas_point_string = "POINT(" . $longitud . " " . $latitud . ")";
+    }
+    $stmt->bindParam(':coordenadas_point', $coordenadas_point_string, PDO::PARAM_STR);
 
     if ($stmt->execute()) {
         http_response_code(201);

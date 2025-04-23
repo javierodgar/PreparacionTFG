@@ -101,6 +101,7 @@ export class PostComentsComponent implements OnInit, OnDestroy {
 
   startEdit(comentario: any): void {
     comentario.isEditing = true;
+    comentario.editedText = comentario.comentario_texto;
   }
 
   cancelEdit(comentario: any): void {

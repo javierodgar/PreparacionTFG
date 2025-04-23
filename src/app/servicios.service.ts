@@ -151,6 +151,11 @@ export class ServiciosService {
     return this.http.post(`${this.baseUrl}valoracion/mal_usuario.php`, { username });
   }
 
+  getPostsByHashtag(hashtag: string): Observable<any[]> {
+    const body = { hashtag: hashtag };
+    return this.http.post<any[]>(`${this.baseUrl}get_posts_by_hashtag.php`, body, { headers: this.getHeaders() });
+  }
+
     // Nueva función: Registrar usuario
   // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
   //   const body = {

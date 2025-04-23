@@ -7,7 +7,7 @@
   @if (hastagh) {
     <div class="detalle-hashtags">
       @for (tag of hastagh; track $index) {
-        <span>#{{ tag }} </span>
+        <span>{{ tag }} </span>
       }
     </div>
   }
@@ -29,6 +29,7 @@
     @for (comentario of publicacionConComentarios.comentarios; track comentario.comentario_id) {
         <div class="comentario">
           @if (comentario.isEditing) {
+            <strong>{{ comentario.nombre_usuario_comentario }}:</strong>
             <textarea [(ngModel)]="comentario.editedText" placeholder="Editar comentario">{{ comentario.comentario_texto }}</textarea>
             <button (click)="saveEditedComment(comentario)">Guardar</button>
             <button (click)="cancelEdit(comentario)">Cancelar</button>

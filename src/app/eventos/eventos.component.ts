@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrearEventosComponent } from './crear-eventos/crear-eventos.component'; // Ajusta la ruta correcta
 import { ServiciosEventosService } from '../servicios-eventos.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-eventos',
   standalone: true,
@@ -15,7 +16,7 @@ export class EventosComponent implements OnInit {
   filtroBusqueda: string = '';
   mostrarModalCrearEvento: boolean = false;
 
-  constructor(private serviciosService: ServiciosEventosService) { }
+  constructor(private serviciosService: ServiciosEventosService, private router: Router) { }
 
   ngOnInit(): void {
     this.cargarEventos();
@@ -69,5 +70,6 @@ export class EventosComponent implements OnInit {
 
   mostrarIdEvento(evento: any) {
     console.log('ID del evento clickeado:', evento.id);
+    this.router.navigate(['main/big_event', evento.id]);
   }
 }

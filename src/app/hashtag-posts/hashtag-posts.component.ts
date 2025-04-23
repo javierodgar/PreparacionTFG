@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common'; // Importa CommonModule
 
 @Component({
   selector: 'app-hashtag-posts',
+  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './hashtag-posts.component.html',
   styleUrl: './hashtag-posts.component.css'
@@ -15,11 +16,12 @@ export class HashtagPostsComponent implements OnInit, OnDestroy {
   posts: any[] = [];
   loading: boolean = false;
   error: string = '';
+  dataUrl = 'http://localhost/dataTFG/'; // Añade esta línea
   private routeSub: Subscription | undefined;
 
   constructor(
     private route: ActivatedRoute,
-    private searchService: ServiciosService // Usa el servicio que filtra posts
+    private service: ServiciosService // Inyecta el nuevo servicio
   ) { }
 
   ngOnInit(): void {
@@ -39,9 +41,9 @@ export class HashtagPostsComponent implements OnInit, OnDestroy {
   loadPostsByHashtag(hashtag: string): void {
     this.loading = true;
     this.error = '';
-    this.searchService.search(hashtag, ['hashtags']).subscribe({ // Ajusta la llamada a tu servicio
+    this.service.getPostsByHashtag(hashtag).subscribe({
       next: (data: any[]) => {
-        this.posts = data.filter(post => post.tipo === 'publicacion' && post.hashtags && post.hashtags.includes(hashtag));
+        this.posts = data.filter(post => post.tipo === 'publicacion'); // Ya no es necesario filtrar por hashtags aquí
         this.loading = false;
       },
       error: (err) => {
@@ -51,5 +53,10 @@ export class HashtagPostsComponent implements OnInit, OnDestroy {
         this.posts = [];
       }
     });
+  }
+
+  // Método trackBy para mejorar el rendimiento de *ngFor
+  trackById(index: number, post: any): number {
+    return post.id; // Asegúrate de que cada post tenga una propiedad 'id'
   }
 }
