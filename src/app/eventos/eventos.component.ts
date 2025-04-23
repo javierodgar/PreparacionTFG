@@ -1,0 +1,73 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CrearEventosComponent } from './crear-eventos/crear-eventos.component'; // Ajusta la ruta correcta
+import { ServiciosEventosService } from '../servicios-eventos.service';
+@Component({
+  selector: 'app-eventos',
+  standalone: true,
+  imports: [CommonModule, FormsModule, CrearEventosComponent],
+  templateUrl: './eventos.component.html',
+  styleUrls: ['./eventos.component.css']
+})
+export class EventosComponent implements OnInit {
+  eventos: any[] = [];
+  filtroBusqueda: string = '';
+  mostrarModalCrearEvento: boolean = false;
+
+  constructor(private serviciosService: ServiciosEventosService) { }
+
+  ngOnInit(): void {
+    this.cargarEventos();
+  }
+
+  cargarEventos() {
+    this.serviciosService.obtenerEventos().subscribe(
+      (data) => {
+        this.eventos = data;
+      },
+      (error) => {
+        console.error('Error al cargar eventos:', error);
+      }
+    );
+  }
+
+  abrirModalCrearEvento() {
+    this.mostrarModalCrearEvento = true;
+  }
+
+  cerrarModalCrearEvento() {
+    this.mostrarModalCrearEvento = false;
+  }
+
+  onEventoCreadoExitoso() {
+    this.cargarEventos(); // Recargar la lista de eventos cuando se crea uno nuevo
+    this.cerrarModalCrearEvento(); // Cerrar el modal
+  }
+
+  filtrarEventos(): any[] {
+    if (!this.filtroBusqueda) {
+      return this.eventos;
+    }
+    const filtro = this.filtroBusqueda.toLowerCase();
+    return this.eventos.filter(evento =>
+      evento.titulo.toLowerCase().includes(filtro) ||
+      evento.descripcion.toLowerCase().includes(filtro) ||
+      evento.categoria.toLowerCase().includes(filtro) ||
+      (evento.direccion && evento.direccion.toLowerCase().includes(filtro)) ||
+      (evento.fecha_inicio && new Date(evento.fecha_inicio).toLocaleDateString().includes(filtro))
+    );
+  }
+
+  chunkArray(array: any[], size: number): any[][] {
+    const chunkedArr: any[][] = [];
+    for (let i = 0; i < array.length; i += size) {
+      chunkedArr.push(array.slice(i, i + size));
+    }
+    return chunkedArr;
+  }
+
+  mostrarIdEvento(evento: any) {
+    console.log('ID del evento clickeado:', evento.id);
+  }
+}

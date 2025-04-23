@@ -139,6 +139,18 @@ export class ServiciosService {
     return this.http.get(url);
   }
 
+  getValoracionGlobal(username: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}valoracion/get_valoracion_global.php?username=${username}`);
+  }
+
+  marcarBuenUsuario(username: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}valoracion/buen_usuario.php`, { username });
+  }
+
+  marcarMalUsuario(username: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}valoracion/mal_usuario.php`, { username });
+  }
+
     // Nueva función: Registrar usuario
   // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
   //   const body = {

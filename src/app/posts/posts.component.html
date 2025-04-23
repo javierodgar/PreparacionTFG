@@ -71,7 +71,7 @@
       @if (post.formattedHashtags && post.formattedHashtags.length > 0) {
       <div class="hashtags">
         @for (hashtag of post.formattedHashtags; track $index) {
-        <span>#{{ hashtag }} </span>
+        <span>{{ hashtag }} </span>
         @if (!$last) {
         <span> </span>
         }
@@ -115,6 +115,7 @@
         >
         </ng-select>
       </div>
+      
       <div>
         <label for="imagen">Imagen:</label>
         <input type="file" id="imagen" (change)="onFileChange($event)">

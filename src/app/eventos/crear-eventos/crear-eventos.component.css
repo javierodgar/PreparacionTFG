@@ -1,0 +1,82 @@
+/* crear-eventos.component.css */
+.modal {
+    position: fixed; /* Lo fija a la ventana del navegador */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative; /* Para posicionar el botón de cierre */
+    width: 80%; /* Ancho del modal (ajusta según necesites) */
+    max-width: 600px; /* Ancho máximo del modal */
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  
+  .close-button:hover {
+    color: #000;
+  }
+  
+  /* Estilos adicionales para el formulario dentro de .modal-content (opcional) */
+  .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .modal-content div {
+    margin-bottom: 10px;
+  }
+  
+  .modal-content label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .modal-content input[type="text"],
+  .modal-content textarea,
+  .modal-content input[type="datetime-local"],
+  .modal-content input[type="file"],
+  .modal-content select {
+    width: calc(100% - 12px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .modal-content button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .modal-content button[type="submit"]:hover {
+    background-color: #0056b3;
+  }

@@ -1,0 +1,30 @@
+<p>eventos works!</p>
+<div class="eventos-container">
+  <div class="eventos-header">
+    <h2>Eventos</h2>
+    <div class="eventos-actions">
+      <input type="text" placeholder="Buscar eventos..." [(ngModel)]="filtroBusqueda">
+      <button (click)="abrirModalCrearEvento()">Crear Evento</button>
+    </div>
+  </div>
+
+  <div class="eventos-list">
+    <div class="evento-card" *ngFor="let evento of filtrarEventos()" (click)="mostrarIdEvento(evento)">
+      <h3>{{ evento.titulo }}</h3>
+      <img *ngIf="evento.imagen_portada" [src]="'http://localhost/dataTFG/' + evento.imagen_portada" alt="Portada del evento">
+      <p>Comienza: {{ evento.fecha_inicio | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+    <div *ngIf="filtrarEventos().length === 0 && filtroBusqueda">
+      <p>No se encontraron eventos con el criterio de búsqueda "{{ filtroBusqueda }}".</p>
+    </div>
+    <div *ngIf="eventos.length === 0 && !filtroBusqueda">
+      <p>No hay eventos disponibles.</p>
+    </div>
+  </div>
+
+  <app-crear-eventos
+    [isVisible]="mostrarModalCrearEvento"
+    (modalCerrado)="cerrarModalCrearEvento()"
+    (eventoCreadoExitoso)="onEventoCreadoExitoso()"
+    *ngIf="mostrarModalCrearEvento"> </app-crear-eventos>
+</div>

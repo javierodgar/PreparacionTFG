@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ServiciosService } from '../servicios.service';
 import { PostUpdateService } from '../post-update.service';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+
 @Component({
   selector: 'app-main',
   imports: [RouterOutlet, CommonModule, FormsModule, ReactiveFormsModule],
@@ -23,14 +24,18 @@ export class MainComponent {
   username: string | null = null;
   profileImageUrl: string | null = null; // Variable para almacenar la URL de la imagen de perfil
   errorMessageProfileImage: string | null = null; // Variable para el mensaje de error de la imagen de perfil
+  selectedHashtags: string[] = []; // Array para almacenar los hashtags añadidos
+
   // Formulario para crear publicaciones
   postForm = new FormGroup({
     titulo: new FormControl('', [Validators.required]),
     texto: new FormControl('', [Validators.required]),
-    hashtags: new FormControl(''),
+    hashtags: new FormControl<string[]>([]) // Para enviar al backend
+    ,
     imagen: new FormControl<File | null>(null)
   });
 
+  @ViewChild('hashtagInput') hashtagInput!: ElementRef; // Referencia al input de hashtags
 
   constructor(
     private router: Router,
@@ -65,13 +70,13 @@ export class MainComponent {
 
   openModal() {
     this.showModal = true;
-    console.log('abre')
+    console.log('abre');
   }
-
 
   closeModal() {
     this.showModal = false;
     this.postForm.reset();
+    this.selectedHashtags = []; // Limpiar la lista de hashtags al cerrar el modal
   }
 
   onFileChange(event: Event) {
@@ -79,6 +84,20 @@ export class MainComponent {
     if (input.files && input.files.length > 0) {
       this.postForm.patchValue({ imagen: input.files[0] });
     }
+  }
+
+  addHashtagFromInput() {
+    const inputValue = this.hashtagInput.nativeElement.value;
+    const trimmedTag = inputValue.trim();
+    if (trimmedTag && !this.selectedHashtags.includes(trimmedTag)) {
+      const formattedTag = trimmedTag.startsWith('#') ? trimmedTag : `#${trimmedTag}`;
+      this.selectedHashtags.push(formattedTag);
+    }
+    this.hashtagInput.nativeElement.value = ''; // Limpiar el input después de añadir
+  }
+
+  removeSelectedHashtag(hashtagToRemove: string) {
+    this.selectedHashtags = this.selectedHashtags.filter(hashtag => hashtag !== hashtagToRemove);
   }
 
   /**
@@ -100,7 +119,7 @@ export class MainComponent {
       formData.append('usuario', this.username!);
       formData.append('titulo', this.postForm.get('titulo')!.value!);
       formData.append('texto', this.postForm.get('texto')!.value!);
-      formData.append('hashtags', this.postForm.get('hashtags')!.value || '');
+      formData.append('hashtags', this.selectedHashtags.join(',')); // Usamos el array de hashtags
       const imageFile = this.postForm.get('imagen')!.value;
       if (imageFile) {
         formData.append('imagen', imageFile);
@@ -123,7 +142,6 @@ export class MainComponent {
     }
   }
 
-
   /**
    * Shows the posts page.
    */
@@ -135,11 +153,15 @@ export class MainComponent {
    * Navigates to the user information page.
    */
   showUser() {
-    this.router.navigate(['main/user_info'])
+    this.router.navigate(['main/user_info']);
   }
 
   showSearch() {
-    this.router.navigate(['main/search'])
+    this.router.navigate(['main/search']);
+  }
+
+  showEvents(){
+    this.router.navigate(['main/events']);
   }
 
   obtenerImagenPerfil(): void {

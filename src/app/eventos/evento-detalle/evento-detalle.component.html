@@ -1,0 +1,36 @@
+<div class="evento-detalle-container"  *ngIf="evento">
+    <h2>{{ evento.titulo }}</h2>
+    <img *ngIf="evento.imagen_portada" [src]="'http://localhost/dataTFG/' + evento.imagen_portada" alt="Portada del evento">
+    <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+    <p><strong>Categoría:</strong> {{ evento.categoria }}</p>
+    <p><strong>Dirección:</strong> {{ evento.direccion }}</p>
+    <p><strong>Comienza:</strong> {{ evento.fecha_inicio | date:'dd/MM/yyyy HH:mm' }}</p>
+    <p><strong>Finaliza:</strong> {{ evento.fecha_fin }}</p>
+    <div class="creador-info">
+      <strong>Creado por:</strong>
+      <img [src]="'http://localhost/dataTFG/' + evento.creador_profile_image" alt="Foto de perfil" width="30">
+      {{ evento.nombre_creador_usuario }}
+    </div>
+  
+    <div class="evento-acciones">
+      <button (click)="darLike()">Like ({{ evento.total_likes }})</button>
+      <button class="dislike" (click)="darDislike()">Dislike ({{ evento.total_dislikes }})</button>
+    </div>
+  
+    <div *ngIf="usuarioLogueadoId" class="inscripcion-acciones">
+      <button *ngIf="!evento.esta_inscrito" (click)="inscribirse()">Inscribirse</button>
+      <button *ngIf="evento.esta_inscrito" (click)="desinscribirse()">Desinscribirse</button>
+      <p *ngIf="evento.esta_inscrito">Estás inscrito en este evento.</p>
+    </div>
+
+    <app-mapa [coords]="eventoCoords"></app-mapa>
+  </div>
+
+  
+  <div class="evento-detalle-container" *ngIf="!evento && eventoId > 0">
+    <p>Cargando detalles del evento...</p>
+  </div>
+  
+  <div class="evento-detalle-container" *ngIf="!evento && eventoId === 0">
+    <p>No se ha seleccionado ningún evento.</p>
+  </div>

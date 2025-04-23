@@ -12,7 +12,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Perm
 $host = "localhost"; // Reemplaza con tu host
 $dbname = "RegistroUsuarios"; // Reemplaza con el nombre de tu base de datos
 $user = "root"; // Reemplaza con tu usuario de base de datos
-$password = "root"; // Reemplaza con tu contraseña de base de datos
+$password = "root"; // Reemplaza con tu contraseña de tu base de datos
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200); // OK
     exit; // Terminar ejecución ya que no se necesita procesar más
@@ -40,28 +40,45 @@ try {
     $username = $data->username;
     $tipo = $data->tipo;
 
-    // Obtener id del usuario usando PDO
-    $queryUsuario = "SELECT id FROM Usuarios WHERE usuario = :username";
-    $stmtUsuario = $pdo->prepare($queryUsuario);
-    $stmtUsuario->bindParam(":username", $username, PDO::PARAM_STR);
-    $stmtUsuario->execute();
-    $usuario = $stmtUsuario->fetch(PDO::FETCH_ASSOC);
+    // Obtener el ID del usuario que dio el like/dislike
+    $queryUsuarioLiker = "SELECT id FROM Usuarios WHERE usuario = :username";
+    $stmtUsuarioLiker = $pdo->prepare($queryUsuarioLiker);
+    $stmtUsuarioLiker->bindParam(":username", $username, PDO::PARAM_STR);
+    $stmtUsuarioLiker->execute();
+    $usuarioLiker = $stmtUsuarioLiker->fetch(PDO::FETCH_ASSOC);
 
-    if (!$usuario) {
+    if (!$usuarioLiker) {
         http_response_code(404);
-        echo json_encode(["message" => "No se encontró el usuario con el nombre de usuario proporcionado."]);
+        echo json_encode(["message" => "No se encontró el usuario que realizó la acción."]);
         exit;
     }
 
-    $usuarioId = $usuario['id'];
+    $usuarioLikerId = $usuarioLiker['id'];
+
+    // Obtener el ID del autor de la publicación
+    $queryAutorPublicacion = "SELECT usuario FROM Publicaciones WHERE id = :publicacion_id";
+    $stmtAutorPublicacion = $pdo->prepare($queryAutorPublicacion);
+    $stmtAutorPublicacion->bindParam(":publicacion_id", $publicacionId, PDO::PARAM_INT);
+    $stmtAutorPublicacion->execute();
+    $autorPublicacion = $stmtAutorPublicacion->fetch(PDO::FETCH_ASSOC);
+
+    if (!$autorPublicacion) {
+        http_response_code(404);
+        echo json_encode(["message" => "No se encontró la publicación."]);
+        exit;
+    }
+
+    $autorUsername = $autorPublicacion['usuario'];
 
     // Verificar si ya existe una interacción del usuario con esta publicación
     $checkQuery = "SELECT id, tipo FROM LikesDislikes WHERE publicacion_id = :publicacion_id AND usuario_id = :usuario_id";
     $checkStmt = $pdo->prepare($checkQuery);
     $checkStmt->bindParam(":publicacion_id", $publicacionId, PDO::PARAM_INT);
-    $checkStmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
+    $checkStmt->bindParam(":usuario_id", $usuarioLikerId, PDO::PARAM_INT);
     $checkStmt->execute();
     $existingInteraction = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+    $accionRegistrada = false; // Bandera para indicar si se insertó o actualizó la interacción
 
     if ($existingInteraction) {
         // Si ya existe una interacción, y es del mismo tipo, la eliminamos (deshacer like/dislike)
@@ -72,7 +89,8 @@ try {
             if ($deleteStmt->execute()) {
                 http_response_code(200);
                 echo json_encode(["message" => "Acción de " . $tipo . " eliminada."]);
-                exit;
+                $accionRegistrada = true; // Aunque se eliminó, consideramos la acción registrada para la valoración
+                $factorValoracion = ($tipo === 'like') ? -0.01 : 0.01; // Revertir el cambio
             } else {
                 http_response_code(500);
                 echo json_encode(["message" => "Error al eliminar la acción de " . $tipo . "."]);
@@ -87,7 +105,8 @@ try {
             if ($updateStmt->execute()) {
                 http_response_code(200);
                 echo json_encode(["message" => "Acción actualizada a " . $tipo . "."]);
-                exit;
+                $accionRegistrada = true;
+                $factorValoracion = ($tipo === 'like') ? 0.02 : -0.02; // Cambio de dislike a like (+0.01 - (-0.01)) o viceversa
             } else {
                 http_response_code(500);
                 echo json_encode(["message" => "Error al actualizar la acción."]);
@@ -99,15 +118,31 @@ try {
         $insertQuery = "INSERT INTO LikesDislikes (publicacion_id, usuario_id, tipo) VALUES (:publicacion_id, :usuario_id, :tipo)";
         $insertStmt = $pdo->prepare($insertQuery);
         $insertStmt->bindParam(":publicacion_id", $publicacionId, PDO::PARAM_INT);
-        $insertStmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
+        $insertStmt->bindParam(":usuario_id", $usuarioLikerId, PDO::PARAM_INT);
         $insertStmt->bindParam(":tipo", $tipo, PDO::PARAM_STR);
 
         if ($insertStmt->execute()) {
             http_response_code(201);
             echo json_encode(["message" => "Acción de " . $tipo . " registrada."]);
+            $accionRegistrada = true;
+            $factorValoracion = ($tipo === 'like') ? 0.01 : -0.01;
         } else {
             http_response_code(500);
             echo json_encode(["message" => "Error al registrar la acción."]);
+            exit;
+        }
+    }
+
+    // Actualizar la valoración global del autor de la publicación SI la acción se registró
+    if ($accionRegistrada && isset($factorValoracion)) {
+        $updateValoracionQuery = "UPDATE Usuarios SET valoracion_global = valoracion_global + :factor WHERE usuario = :autor_username";
+        $updateValoracionStmt = $pdo->prepare($updateValoracionQuery);
+        $updateValoracionStmt->bindParam(":factor", $factorValoracion, PDO::PARAM_STR);
+        $updateValoracionStmt->bindParam(":autor_username", $autorUsername, PDO::PARAM_STR);
+
+        if (!$updateValoracionStmt->execute()) {
+            // Log del error de actualización de valoración (no crítico para la acción de like/dislike)
+            error_log("Error al actualizar la valoración del usuario " . $autorUsername . ": " . print_r($updateValoracionStmt->errorInfo(), true));
         }
     }
 

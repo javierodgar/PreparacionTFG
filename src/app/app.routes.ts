@@ -8,6 +8,8 @@ import { PostComentsComponent } from './post-coments/post-coments.component';
 import { SearchPageComponent } from './search-page/search-page.component';
 import { UserGeneralComponent } from './user-general/user-general.component';
 import { HashtagPostsComponent } from './hashtag-posts/hashtag-posts.component';
+import { EventosComponent } from './eventos/eventos.component';
+import { EventoDetalleComponent } from './eventos/evento-detalle/evento-detalle.component';
 
 export const routes: Routes = [
     {
@@ -24,6 +26,8 @@ export const routes: Routes = [
             {path: 'user_general/:username', component:UserGeneralComponent},
             {path: 'search', component: SearchPageComponent},
             {path: 'hastag_posts/:hashtag', component: HashtagPostsComponent},
+            {path: 'events', component: EventosComponent},
+            {path: 'big_event/:id', component: EventoDetalleComponent},
         ]
     },
     {

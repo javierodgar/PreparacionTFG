@@ -13,8 +13,8 @@
         <div class="nav-icons">
             <div class="nav-icon" id="createPostBtn" (click)="showPosts()"><img src="/icons/libro.png" alt="icono de libro para mostrar todas las publicaciones"></div>
             <div class="nav-icon" id="showPosts" (click)="openModal()"><img src="/icons/publicacion.png" alt="icono de mas para crear una nueva publicacion"></div>
-            <div class="nav-icon" id="buscador" (click)="showSearch()"><img src="/icons/lupa.png" alt="icono de mas para crear una nueva publicacion"></div>
-            <div class="nav-icon" ></div>
+            <div class="nav-icon" id="buscador" (click)="showSearch()"><img src="/icons/lupa.png" alt="icono de acceso al apartado de busqueda general"></div>
+            <div class="nav-icon" id="events" (click)="showEvents()"><img src="/icons/evento.png" alt="icono de acceso al apartado de eventos"></div>
         </div>
     </div>
 
@@ -47,30 +47,46 @@
 
 <!-- Ventana modal para crear publicación -->
 <div class="modal" *ngIf="showModal">
-    <div class="modal-content">
-      <span class="close" (click)="closeModal()">×</span>
-      <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+  <div class="modal-content">
+    <span class="close" (click)="closeModal()">×</span>
+    <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
 
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" formControlName="titulo" required />
-        <div *ngIf="postForm.get('titulo')?.errors?.['required'] && postForm.get('titulo')?.touched" class="error">
-          El título es obligatorio.
-        </div>
+      <label for="titulo">Título:</label>
+      <input type="text" id="titulo" formControlName="titulo" required />
+      <div *ngIf="postForm.get('titulo')?.errors?.['required'] && postForm.get('titulo')?.touched" class="error">
+        El título es obligatorio.
+      </div>
 
-        <label for="texto">Texto:</label>
-        <textarea id="texto" formControlName="texto" required></textarea>
-        <div *ngIf="postForm.get('texto')?.errors?.['required'] && postForm.get('texto')?.touched" class="error">
-          El texto es obligatorio.
-        </div>
+      <label for="texto">Texto:</label>
+      <textarea id="texto" formControlName="texto" required></textarea>
+      <div *ngIf="postForm.get('texto')?.errors?.['required'] && postForm.get('texto')?.touched" class="error">
+        El texto es obligatorio.
+      </div>
 
-        <label for="hashtags">Hashtags:</label>
-        <input type="text" id="hashtags" formControlName="hashtags" placeholder="#tag1 #tag2" />
+      <div>
+        <label for="newHashtagInput">Hashtags:</label>
+        <input
+          type="text"
+          id="newHashtagInput"
+          (keydown.enter)="addHashtagFromInput()"
+          placeholder="Escribe un hashtag y presiona Enter"
+          #hashtagInput
+        />
+      </div>
 
-        <label for="imagen">Imagen (opcional):</label>
-        <input type="file" id="imagen" (change)="onFileChange($event)" accept="image/*" />
+      <div class="selected-hashtags" *ngIf="selectedHashtags.length > 0">
+        <strong>Hashtags Añadidos:</strong>
+        <span class="hashtag-item" *ngFor="let hashtag of selectedHashtags">
+          {{ hashtag }}
+          <button type="button" (click)="removeSelectedHashtag(hashtag)">x</button>
+        </span>
+      </div>
 
-        <button type="submit" [disabled]="!postForm.valid">Guardar</button>
-      </form>
-    </div>
+      <label for="imagen">Imagen (opcional):</label>
+      <input type="file" id="imagen" (change)="onFileChange($event)" accept="image/*" />
+
+      <button type="button" (click)="onSubmit()" [disabled]="!postForm.valid">Guardar</button>
+    </form>
   </div>
+</div>
 </html>

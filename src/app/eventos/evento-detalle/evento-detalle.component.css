@@ -1,0 +1,116 @@
+
+/* evento-detalle.component.css */
+.evento-detalle-container {
+  padding: 20px;
+  font-family: sans-serif;
+  color: #333;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+.evento-detalle-container h2 {
+  color: #007bff;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+.evento-detalle-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.evento-detalle-container p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.evento-detalle-container p strong {
+  font-weight: bold;
+}
+
+.evento-acciones {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.evento-acciones button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.evento-acciones button:hover {
+  background-color: #218838;
+}
+
+.evento-acciones button.dislike {
+  background-color: #dc3545;
+}
+
+.evento-acciones button.dislike:hover {
+  background-color: #c82333;
+}
+
+.inscripcion-acciones {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.inscripcion-acciones button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.inscripcion-acciones button:hover {
+  background-color: #0056b3;
+}
+
+.inscripcion-acciones p {
+  font-weight: bold;
+  color: #198754;
+}
+
+.creador-info {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9em;
+  color: #777;
+}
+
+.creador-info img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* mapa.component.css */
+#map {
+  height: 300px; /* Necesitas una altura base */
+  width: 100%;
+  flex-grow: 1; /* El mapa crecerá para ocupar el espacio restante */
+  border-radius: 8px;
+}

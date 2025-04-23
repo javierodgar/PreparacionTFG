@@ -1,0 +1,6 @@
+/* mapa.component.css */
+#map {
+    height: 300px; /* Ajusta la altura según tus necesidades */
+    width: 100%; /* O un ancho fijo si es necesario */
+    border-radius: 8px; /* O cualquier otro estilo visual */
+  }

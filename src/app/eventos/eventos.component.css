@@ -1,0 +1,71 @@
+/* eventos.component.css */
+.eventos-container {
+  padding: 20px;
+}
+
+.eventos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.eventos-actions input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+.eventos-actions button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.eventos-actions button:hover {
+  background-color: #0056b3;
+}
+
+.eventos-list {
+  display: flex;
+  flex-wrap: wrap; /* Permite que las tarjetas pasen a la siguiente línea */
+  gap: 20px; /* Espacio entre las tarjetas */
+}
+
+.evento-card {
+  width: calc(50% - 20px); /* Cada tarjeta ocupa la mitad del ancho menos el gap */
+  min-width: 300px; /* Ancho mínimo para evitar que se encojan demasiado */
+  margin-bottom: 20px; /* Espacio entre las filas (si se envuelven) */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.evento-card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.evento-card img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.evento-card p {
+  margin-top: 0;
+  font-size: 1em;
+  color: #555;
+}
