@@ -8,25 +8,18 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
-// **Configuración de la base de datos**
-$host = "localhost"; // Reemplaza con tu host
-$dbname = "RegistroUsuarios"; // Reemplaza con el nombre de tu base de datos
-$user = "root"; // Reemplaza con tu usuario de base de datos
-$password = "root"; // Reemplaza con tu contraseña de base de datos
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200); // OK
     exit; // Terminar ejecución ya que no se necesita procesar más
 }
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["message" => "Error al conectar a la base de datos: " . $e->getMessage()]);
-    exit;
-}
+
+// **Configuración de la base de datos**
+require_once 'db_config.php';
 
 try {
+    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
+
     // Obtener los datos enviados por POST
     $data = json_decode(file_get_contents("php://input"));
 
@@ -58,7 +51,7 @@ try {
     $id_usuario = $usuario['id'];
 
     // Consulta SQL para insertar el comentario
-    $queryComentario = "INSERT INTO comentarios (publicacion_id, usuario_id, texto) VALUES (:publicacion_id, :usuario_id, :texto)";
+    $queryComentario = "INSERT INTO comentarios (publicacion_id, usuario_id, texto, fecha_creacion) VALUES (:publicacion_id, :usuario_id, :texto, NOW())";
 
     // Preparar la consulta del comentario
     $stmtComentario = $pdo->prepare($queryComentario);
@@ -74,7 +67,7 @@ try {
         echo json_encode(["message" => "Comentario guardado exitosamente."]);
     } else {
         http_response_code(500);
-        echo json_encode(["message" => "Error al guardar el comentario."]);
+        echo json_encode(["message" => "Error al guardar el comentario." . $stmtComentario->errorInfo()[2]]);
     }
 
 } catch (PDOException $e) {

@@ -1,18 +1,25 @@
 <?php
 // Archivo: like_dislike_post.php
 
-header("Access-Control-Allow-Origin: *");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
+    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
+    header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+    header("Access-Control-Max-Age: 3600");
+    http_response_code(200); // Responde con OK para las solicitudes OPTIONS
+    exit;
+}
+
 header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
 // **Configuración de la base de datos**
 $host = "localhost"; // Reemplaza con tu host
 $dbname = "RegistroUsuarios"; // Reemplaza con el nombre de tu base de datos
 $user = "root"; // Reemplaza con tu usuario de base de datos
 $password = "root"; // Reemplaza con tu contraseña de tu base de datos
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200); // OK
     exit; // Terminar ejecución ya que no se necesita procesar más

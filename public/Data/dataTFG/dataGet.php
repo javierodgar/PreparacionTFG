@@ -20,6 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200); // OK
     exit; // Terminar ejecución ya que no se necesita procesar más
 }
+
+require_once 'db_config.php';
+
 // Verificar si se recibieron datos JSON válidos
 if ($data === null) {
     http_response_code(400); // Bad Request
@@ -37,37 +40,23 @@ if (empty($username)) {
     exit;
 }
 
-// Conexión a la base de datos
-$host = "localhost"; // Ajusta según tu configuración
-$dbUsername = "root"; // Ajusta según tu usuario de BD
-$dbPassword = "root";    // Ajusta según tu contraseña de BD
-$dbName = "RegistroUsuarios"; // Nombre de la base de datos
-
 try {
-    $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-
-    // Verificar conexión
-    if ($conn->connect_error) {
-        http_response_code(500); // Internal Server Error
-        echo json_encode(["message" => "Error de conexión a la base de datos: " . $conn->connect_error]);
-        exit;
-    }
+    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
 
     // Preparar la consulta SQL para obtener el usuario y la contraseña
-    $stmt = $conn->prepare("SELECT usuario, contrasena FROM Usuarios WHERE usuario = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $pdo->prepare("SELECT usuario, contrasena FROM Usuarios WHERE usuario = :username");
+    $stmt->bindParam(':username', $username);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Verificar si se encontró el usuario
-    if ($result->num_rows > 0) {
-        $userData = $result->fetch_assoc();
+    if ($result) {
         http_response_code(200); // OK
         echo json_encode([
             "message" => "Usuario encontrado",
             "data" => [
-                "username" => $userData['usuario'],
-                "encryptedPassword" => $userData['contrasena']
+                "username" => $result['usuario'],
+                "encryptedPassword" => $result['contrasena']
             ]
         ]);
     } else {
@@ -75,11 +64,7 @@ try {
         echo json_encode(["message" => "Error: No se encontró un usuario con ese nombre"]);
     }
 
-    // Cerrar la declaración y la conexión
-    $stmt->close();
-    $conn->close();
-
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500); // Internal Server Error
     echo json_encode(["message" => "Error en el servidor: " . $e->getMessage()]);
 }

@@ -8,22 +8,17 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"); // Permite todos los métodos comunes
-// Conexión a la base de datos (mantener tu configuración)
-$host = "localhost";
-$dbUsername = "root";
-$dbPassword = "root";
-$dbName = "RegistroUsuarios";
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200); // OK
     exit; // Terminar ejecución ya que no se necesita procesar más
 }
+
+// **Configuración de la base de datos**
+require_once 'db_config.php';
+
 try {
-    $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(["message" => "Error de conexión a la base de datos: " . $conn->connect_error]);
-        exit;
-    }
+    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
 
     // Recibir datos del formulario (usando $_POST para los campos de texto)
     $username = $_POST['username'] ?? null;
@@ -42,9 +37,13 @@ try {
     }
 
     $profileImageName = null;
+    $profileImageUrl = null;
     // Procesar la carga de la imagen de perfil (usando $_FILES para el archivo)
     if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
         $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
         $fileName = basename($_FILES['profileImage']['name']);
         $uniqueFileName = uniqid() . '_' . $fileName;
         $targetFilePath = $uploadDir . $uniqueFileName;
@@ -54,6 +53,7 @@ try {
         if (in_array($imageFileType, $allowedExtensions)) {
             if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $targetFilePath)) {
                 $profileImageName = $uniqueFileName;
+                $profileImageUrl = $uploadDir . $profileImageName;
             } else {
                 http_response_code(500);
                 echo json_encode(["message" => "Error al subir la imagen de perfil."]);
@@ -66,26 +66,26 @@ try {
         }
     }
 
-    if($profileImageName){
-        $profileImageUrl = "uploads/" . $profileImageName; 
-    }
-
     // Preparar la consulta SQL para insertar los datos incluyendo la foto de perfil
-    $stmt = $conn->prepare("INSERT INTO Usuarios (usuario, nombre, apellido1, apellido2, correo_electronico, ciudad_residencia, contrasena, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssss", $username, $firstName, $lastName1, $lastName2, $email, $city, $encryptedPassword, $profileImageUrl);
+    $stmt = $pdo->prepare("INSERT INTO Usuarios (usuario, nombre, apellido1, apellido2, correo_electronico, ciudad_residencia, contrasena, profile_image) VALUES (:username, :firstName, :lastName1, :lastName2, :email, :city, :encryptedPassword, :profileImage)");
+    $stmt->bindParam(":username", $username);
+    $stmt->bindParam(":firstName", $firstName);
+    $stmt->bindParam(":lastName1", $lastName1);
+    $stmt->bindParam(":lastName2", $lastName2);
+    $stmt->bindParam(":email", $email);
+    $stmt->bindParam(":city", $city);
+    $stmt->bindParam(":encryptedPassword", $encryptedPassword);
+    $stmt->bindParam(":profileImage", $profileImageUrl);
 
     if ($stmt->execute()) {
         http_response_code(201);
         echo json_encode(["message" => "Usuario registrado exitosamente"]);
     } else {
         http_response_code(500);
-        echo json_encode(["message" => "Error al registrar el usuario: " . $stmt->error]);
+        echo json_encode(["message" => "Error al registrar el usuario: " . $stmt->errorInfo()[2]]);
     }
 
-    $stmt->close();
-    $conn->close();
-
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["message" => "Error en el servidor: " . $e->getMessage()]);
 }

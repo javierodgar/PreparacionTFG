@@ -9,6 +9,11 @@
     <p><strong>Ciudad:</strong> {{ userData.ciudad_residencia }}</p>
     <p *ngIf="valoracionGlobal !== null"><strong>Valoración:</strong> {{ valoracionGlobal.toFixed(3) }}</p>
 
+    <button *ngIf="getCurrentLoggedInUsername() !== userData.usuario"
+            (click)="toggleFollow()">
+      {{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}
+    </button>
+
     <button (click)="marcarBuenUsuario()">Buen Usuario (+0.1)</button>
     <button (click)="marcarMalUsuario()">Mal Usuario (-0.1)</button>
   </div>
@@ -17,7 +22,6 @@
       <p>Usuario no encontrado o error al cargar los datos.</p>
     </div>
   </ng-template>
-
 
   <div class="user-posts">
     <h3>Publicaciones</h3>
@@ -33,5 +37,4 @@
       </div>
     </div>
   </div>
-
 </div>

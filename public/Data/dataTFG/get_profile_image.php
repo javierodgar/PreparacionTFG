@@ -20,25 +20,13 @@ if (empty($username)) {
     exit;
 }
 
-$host = "localhost";
-$dbUsername = "root";
-$dbPassword = "root";
-$dbName = "RegistroUsuarios";
+require_once 'db_config.php';
 
 try {
-    $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(["message" => "Error de conexión: " . $conn->connect_error]);
-        exit;
-    }
-
-    // Obtener la imagen de perfil del usuario
-    $stmt = $conn->prepare("SELECT profile_image FROM Usuarios WHERE usuario = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $pdo->prepare("SELECT profile_image FROM Usuarios WHERE usuario = :username");
+    $stmt->bindParam(":username", $username);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $userData = $result->fetch_assoc();
+    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($userData && $userData['profile_image']) {
         http_response_code(200);
@@ -51,9 +39,7 @@ try {
         echo json_encode(["message" => "Imagen de perfil no encontrada para el usuario"]);
     }
 
-    $stmt->close();
-    $conn->close();
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["message" => "Error en el servidor: " . $e->getMessage()]);
 }

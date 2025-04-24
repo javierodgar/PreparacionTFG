@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ServiciosService } from '../servicios.service'; // Importar el nuevo servicio de valoración
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ServiciosService } from '../servicios.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PostUpdateService } from '../post-update.service';
@@ -21,7 +21,8 @@ export class UserGeneralComponent implements OnInit {
   showEditModal: boolean = false;
   username: string | null = null;
   profileImage: string | null = null;
-  valoracionGlobal: number | null = null; // Para mostrar la valoración
+  valoracionGlobal: number | null = null;
+  isFollowing: boolean = false; // Variable para controlar el estado de seguimiento
 
   private postUpdateSubscription: Subscription;
 
@@ -45,7 +46,8 @@ export class UserGeneralComponent implements OnInit {
       } else {
         this.loadUserData();
         this.loadProfileImage();
-        this.loadValoracionGlobal(); // Cargar la valoración al inicializar
+        this.loadValoracionGlobal();
+        this.checkIfFollowing(); // Verificar si el usuario actual sigue a este perfil
       }
     });
   }
@@ -94,7 +96,7 @@ export class UserGeneralComponent implements OnInit {
 
   loadValoracionGlobal() {
     if (this.username) {
-      this.servicios.getValoracionGlobal(this.username).subscribe({ // Asumo que tienes este método en ServiciosService para obtener la valoración inicial
+      this.servicios.getValoracionGlobal(this.username).subscribe({
         next: (data) => {
           this.valoracionGlobal = data.valoracion_global;
         },
@@ -106,16 +108,55 @@ export class UserGeneralComponent implements OnInit {
     }
   }
 
+  // SIMULACIÓN - Reemplazar con la lógica real para obtener el usuario actual
+  getCurrentLoggedInUsername(): string | null {
+    return this.getCookie('username');
+  }
+
+
+checkIfFollowing() {
+    const loggedInUsername = this.getCurrentLoggedInUsername();
+    if (loggedInUsername && this.username && loggedInUsername !== this.username) {
+      this.servicios.isFollowing(loggedInUsername, this.username).subscribe({
+        next: (data) => {
+          this.isFollowing = data.is_following;
+        },
+        error: (error) => {
+          console.error('Error al verificar si se está siguiendo:', error);
+          this.isFollowing = false; // En caso de error, asumimos que no se está siguiendo
+        }
+      });
+    } else if (loggedInUsername === this.username) {
+      this.isFollowing = true; // Un usuario se considera a sí mismo como "siguiendo" (para ocultar el botón)
+    }
+  }
+
+  toggleFollow() {
+    const loggedInUsername = this.getCurrentLoggedInUsername();
+    if (loggedInUsername && this.username && loggedInUsername !== this.username) {
+      this.servicios.followUnfollow(loggedInUsername, this.username).subscribe({
+        next: (response) => {
+          this.isFollowing = !this.isFollowing;
+          // Opcional: Actualizar el contador de seguidores en tiempo real si es necesario
+          this.loadUserData(); // Recargar datos para actualizar los contadores
+        },
+        error: (error) => {
+          console.error('Error al seguir/dejar de seguir:', error);
+          // Posiblemente mostrar un mensaje al usuario
+        }
+      });
+    }
+  }
+
   marcarBuenUsuario() {
     if (this.username) {
       this.servicios.marcarBuenUsuario(this.username).subscribe({
         next: (response) => {
           console.log('Buen usuario marcado:', response);
-          this.loadValoracionGlobal(); // Recargar la valoración tras la acción
+          this.loadValoracionGlobal();
         },
         error: (error) => {
           console.error('Error al marcar como buen usuario:', error);
-          // Posiblemente mostrar un mensaje al usuario
         }
       });
     }
@@ -126,11 +167,10 @@ export class UserGeneralComponent implements OnInit {
       this.servicios.marcarMalUsuario(this.username).subscribe({
         next: (response) => {
           console.log('Mal usuario marcado:', response);
-          this.loadValoracionGlobal(); // Recargar la valoración tras la acción
+          this.loadValoracionGlobal();
         },
         error: (error) => {
           console.error('Error al marcar como mal usuario:', error);
-          // Posiblemente mostrar un mensaje al usuario
         }
       });
     }

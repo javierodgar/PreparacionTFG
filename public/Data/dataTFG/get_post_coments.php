@@ -13,19 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // **Configuración de la base de datos**
-$host = "localhost";
-$dbname = "RegistroUsuarios";
-$user = "root";
-$password = "root";
+require_once 'db_config.php';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["message" => "Error al conectar a la base de datos: " . $e->getMessage()]);
-    exit;
-}
 
 try {
     $publicacionId = $_GET['publicacion_id'] ?? null;

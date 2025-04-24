@@ -195,6 +195,8 @@ select * from PublicacionHashtag;
 
 select  * from publicaciones;
 
+
+
 select * from usuarios;
 
 select * from eventos;

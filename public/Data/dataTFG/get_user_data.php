@@ -23,25 +23,17 @@ if (empty($username)) {
     exit;
 }
 
-$host = "localhost";
-$dbUsername = "root";
-$dbPassword = "root";
-$dbName = "RegistroUsuarios";
+// **Configuración de la base de datos**
+require_once 'db_config.php';
 
 try {
-    $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(["message" => "Error de conexión: " . $conn->connect_error]);
-        exit;
-    }
+    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
 
     // Obtener datos del usuario
-    $stmt = $conn->prepare("SELECT usuario, nombre, apellido1, apellido2, correo_electronico, ciudad_residencia FROM Usuarios WHERE usuario = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $userResult = $stmt->get_result();
-    $userData = $userResult->fetch_assoc();
+    $stmtUser = $pdo->prepare("SELECT usuario, nombre, apellido1, apellido2, correo_electronico, ciudad_residencia FROM Usuarios WHERE usuario = :username");
+    $stmtUser->bindParam(":username", $username);
+    $stmtUser->execute();
+    $userData = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
     if (!$userData) {
         http_response_code(404);
@@ -50,69 +42,54 @@ try {
     }
 
     // Obtener publicaciones del usuario y sus hashtags
-    $stmt = $conn->prepare("SELECT id, imagen, titulo, texto FROM Publicaciones WHERE usuario = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $postsResult = $stmt->get_result();
+    $stmtPosts = $pdo->prepare("SELECT id, imagen, titulo, texto FROM Publicaciones WHERE usuario = :username");
+    $stmtPosts->bindParam(":username", $username);
+    $stmtPosts->execute();
+    $postsResult = $stmtPosts->fetchAll(PDO::FETCH_ASSOC);
     $posts = [];
-    while ($postRow = $postsResult->fetch_assoc()) {
+    foreach ($postsResult as $postRow) {
         $postId = $postRow['id'];
 
-        $hashtagsStmt = $conn->prepare("
+        $hashtagsStmt = $pdo->prepare("
             SELECT h.nombre
             FROM Hashtags h
             INNER JOIN PublicacionHashtag ph ON h.id = ph.hashtag_id
-            WHERE ph.publicacion_id = ?
+            WHERE ph.publicacion_id = :postId
         ");
-        $hashtagsStmt->bind_param("i", $postId);
+        $hashtagsStmt->bindParam(":postId", $postId, PDO::PARAM_INT);
         $hashtagsStmt->execute();
-        $hashtagsResult = $hashtagsStmt->get_result();
-        $hashtags = [];
-        while ($hashtagRow = $hashtagsResult->fetch_assoc()) {
-            $hashtags[] = $hashtagRow['nombre'];
-        }
-        $hashtagsStmt->close();
-
-        $posts[] = array_merge($postRow, ['hashtags' => $hashtags]);
+        $hashtagsResult = $hashtagsStmt->fetchAll(PDO::FETCH_COLUMN);
+        $postRow['hashtags'] = $hashtagsResult;
+        $posts[] = $postRow;
     }
 
     // Obtener usuarios a los que sigue (seguidos)
-    $stmt = $conn->prepare("SELECT seguido FROM Seguidores WHERE seguidor = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $followingResult = $stmt->get_result();
-    $following = [];
-    while ($row = $followingResult->fetch_assoc()) {
-        $following[] = $row['seguido'];
-    }
+    $stmtFollowing = $pdo->prepare("SELECT seguido FROM Seguidores WHERE seguidor = :username");
+    $stmtFollowing->bindParam(":username", $username);
+    $stmtFollowing->execute();
+    $followingResult = $stmtFollowing->fetchAll(PDO::FETCH_COLUMN);
 
     // Obtener usuarios que lo siguen (seguidores)
-    $stmt = $conn->prepare("SELECT seguidor FROM Seguidores WHERE seguido = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $followersResult = $stmt->get_result();
-    $followers = [];
-    while ($row = $followersResult->fetch_assoc()) {
-        $followers[] = $row['seguidor'];
-    }
+    $stmtFollowers = $pdo->prepare("SELECT seguidor FROM Seguidores WHERE seguido = :username");
+    $stmtFollowers->bindParam(":username", $username);
+    $stmtFollowers->execute();
+    $followersResult = $stmtFollowers->fetchAll(PDO::FETCH_COLUMN);
 
     $response = [
         "message" => "Datos del usuario obtenidos",
         "user" => $userData,
         "posts" => $posts,
         "postCount" => count($posts),
-        "following" => $following,
-        "followers" => $followers,
-        "followingCount" => count($following),
-        "followersCount" => count($followers)
+        "following" => $followingResult,
+        "followers" => $followersResult,
+        "followingCount" => count($followingResult),
+        "followersCount" => count($followersResult)
     ];
 
     http_response_code(200);
     echo json_encode($response);
 
-    $stmt->close();
-    $conn->close();
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["message" => "Error en el servidor: " . $e->getMessage()]);
 }

@@ -156,6 +156,14 @@ export class ServiciosService {
     return this.http.post<any[]>(`${this.baseUrl}get_posts_by_hashtag.php`, body, { headers: this.getHeaders() });
   }
 
+  isFollowing(followerUsername: string, followingUsername: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}is_following.php`, { follower: followerUsername, followed: followingUsername });
+  }
+
+  followUnfollow(followerUsername: string, followingUsername: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}follow_unfollow.php`, { follower: followerUsername, followed: followingUsername });
+  }
+
     // Nueva función: Registrar usuario
   // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
   //   const body = {

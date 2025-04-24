@@ -13,22 +13,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$host = "localhost";
-$dbUsername = "root";
-$dbPassword = "root";
-$dbName = "RegistroUsuarios";
+// **Configuración de la base de datos**
+require_once 'db_config.php';
 
 try {
-    $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
-
-    if ($conn->connect_error) {
-        http_response_code(500);
-        echo json_encode(["message" => "Error de conexión: " . $conn->connect_error]);
-        exit;
-    }
+    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
 
     // Consulta para obtener todas las publicaciones con el número de likes y dislikes
-    $stmt = $conn->prepare("
+    $stmt = $pdo->prepare("
         SELECT
             p.id,
             p.usuario,
@@ -41,28 +33,23 @@ try {
         ORDER BY p.fecha_creacion DESC
     ");
     $stmt->execute();
-    $result = $stmt->get_result();
+    $postsResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $posts = [];
-    while ($row = $result->fetch_assoc()) {
+    foreach ($postsResult as $row) {
         $post_id = $row["id"];
 
         // Consulta para obtener los hashtags de la publicación actual usando las tablas Hashtags y PublicacionHashtag
-        $hashtags_stmt = $conn->prepare("
+        $hashtags_stmt = $pdo->prepare("
             SELECT
                 h.nombre
             FROM Hashtags h
             INNER JOIN PublicacionHashtag ph ON h.id = ph.hashtag_id
-            WHERE ph.publicacion_id = ?
+            WHERE ph.publicacion_id = :post_id
         ");
-        $hashtags_stmt->bind_param("i", $post_id);
+        $hashtags_stmt->bindParam(":post_id", $post_id, PDO::PARAM_INT);
         $hashtags_stmt->execute();
-        $hashtags_result = $hashtags_stmt->get_result();
-
-        $hashtags = [];
-        while ($hashtag_row = $hashtags_result->fetch_assoc()) {
-            $hashtags[] = $hashtag_row["nombre"];
-        }
+        $hashtagsResult = $hashtags_stmt->fetchAll(PDO::FETCH_COLUMN); // Obtener solo la columna 'nombre'
 
         $posts[] = [
             "id" => $row["id"],
@@ -70,21 +57,16 @@ try {
             "imagen" => $row["imagen"],
             "titulo" => $row["titulo"],
             "texto" => $row["texto"],
-            "hashtags" => $hashtags, // Array de nombres de hashtags
+            "hashtags" => $hashtagsResult, // Array de nombres de hashtags
             "likes_count" => $row["likes_count"], // Número de likes
             "dislikes_count" => $row["dislikes_count"] // Número de dislikes
         ];
-
-        $hashtags_stmt->close();
     }
 
     http_response_code(200);
     echo json_encode(["message" => "Publicaciones obtenidas", "data" => $posts]);
 
-    $stmt->close();
-    $conn->close();
-
-} catch (Exception $e) {
+} catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["message" => "Error en el servidor: " . $e->getMessage()]);
 }

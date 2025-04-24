@@ -1,4 +1,6 @@
 <?php
+
+
 // db_config.php
 
 $host = "localhost"; // Reemplaza con tu host de base de datos
