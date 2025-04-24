@@ -1,27 +1,14 @@
--- Crear la base de datos
 CREATE DATABASE IF NOT EXISTS RegistroUsuarios;
 
 -- Usar la base de datos recién creada
 USE RegistroUsuarios;
 
-SELECT
-                    p.id,
-                    p.usuario,
-                    p.imagen,
-                    p.titulo,
-                    p.texto,
-                    GROUP_CONCAT(hg.nombre SEPARATOR ',') AS hashtags,
-                    p.fecha_creacion,
-                    'publicacion' AS tipo,
-                    (SELECT COUNT(*) FROM LikesDislikes WHERE publicacion_id = p.id AND tipo = 'like') AS total_likes,
-                    (SELECT COUNT(*) FROM LikesDislikes WHERE publicacion_id = p.id AND tipo = 'dislike') AS total_dislikes
-                FROM Publicaciones p
-                INNER JOIN PublicacionHashtag ph ON p.id = ph.publicacion_id
-                inner join Hashtags hg ON ph.hashtag_id = hg.id
-                INNER JOIN Hashtags h ON ph.hashtag_id = h.id
-                WHERE h.nombre = '#g'
-                GROUP BY p.id
-                ORDER BY p.fecha_creacion DESC;
+SELECT c.id AS comentario_id, c.texto AS comentario_texto, c.fecha_creacion AS comentario_fecha_creacion,
+                                     u_com.usuario AS nombre_usuario_comentario
+                         FROM Comentarios c
+                         INNER JOIN Usuarios u_com ON c.usuario_id = u_com.id
+                         WHERE c.publicacion_id = :publicacion_id
+                         ORDER BY c.fecha_creacion ASC;
 
 -- Crear la tabla Usuarios con los campos solicitados
 CREATE TABLE IF NOT EXISTS Usuarios (
@@ -68,14 +55,16 @@ CREATE TABLE IF NOT EXISTS seguidores (
   KEY `seguido` (`seguido`)
 );
 
+
+
 CREATE TABLE  IF NOT EXISTS Comentarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     publicacion_id INT NOT NULL,
-    usuario VARCHAR(50) NOT NULL,
+    usuario_id VARCHAR(50) NOT NULL,
     texto TEXT NOT NULL,
-    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (publicacion_id) REFERENCES Publicaciones(id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario) REFERENCES Usuarios(usuario) ON DELETE CASCADE
+    FOREIGN KEY (usuario_id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Hashtags (
@@ -144,7 +133,6 @@ CREATE TABLE IF NOT EXISTS LikesDislikesEventos (
     FOREIGN KEY (usuario_id) REFERENCES Usuarios(id) ON DELETE CASCADE,
     UNIQUE KEY unique_like_dislike_evento (evento_id, usuario_id) -- Un usuario solo puede dar un like/dislike por evento
 );
-
 
 
 -- ALTER TABLE Usuarios
