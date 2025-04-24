@@ -1,0 +1,44 @@
+<p>modal-admin-evento works!</p>
+<div class="modal-overlay" *ngIf="isVisible">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-nav">
+        <button
+          [ngClass]="{'active': activeTab === 'edicion'}"
+          (click)="setActiveTab('edicion')"
+        >
+          Edición
+        </button>
+        <button
+          [ngClass]="{'active': activeTab === 'suscritos'}"
+          (click)="setActiveTab('suscritos')"
+        >
+          Gente Suscrita
+        </button>
+        <button
+          [ngClass]="{'active': activeTab === 'eliminar'}"
+          (click)="setActiveTab('eliminar')"
+        >
+          Eliminar
+        </button>
+      </div>
+      <button class="close-button" (click)="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="activeTab === 'edicion'">
+        <h3>Edición del Evento</h3>
+        <p>Aquí podrás editar los detalles del evento.</p>
+      </div>
+      <div *ngIf="activeTab === 'suscritos'">
+        <h3>Gente Suscrita</h3>
+        <p>Lista de usuarios suscritos a este evento.</p>
+      </div>
+      <div *ngIf="activeTab === 'eliminar'">
+        <h3>Eliminar Evento</h3>
+        <p>¿Estás seguro de que quieres eliminar este evento?</p>
+        <button class="confirm-delete-button">Eliminar</button>
+        <button (click)="setActiveTab('edicion')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -37,4 +37,8 @@ export class ServiciosEventosService {
     const body = { evento_id: eventoId, username: username };
     return this.http.post(`${this.baseUrl}/desinscribirse_evento.php`, body);
   }
+
+  editarEvento(formData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}editar_evento.php`, formData);
+  }
 }

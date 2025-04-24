@@ -5,11 +5,13 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { MapaComponent } from '../mapa/mapa.component';
 import { LatLng } from 'leaflet';
+import { ServiciosService } from '../../servicios.service';
+import { ModalAdminEventoComponent } from '../modal-admin-evento/modal-admin-evento.component';
 
 @Component({
   selector: 'app-evento-detalle',
   standalone: true,
-  imports: [CommonModule, DatePipe, MapaComponent],
+  imports: [CommonModule, DatePipe, MapaComponent, ModalAdminEventoComponent],
   templateUrl: './evento-detalle.component.html',
   styleUrls: ['./evento-detalle.component.css']
 })
@@ -19,14 +21,19 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
   loggedInUsername: any; // se remplaza el nombre de usuario recogiendolo desde la cookie
   private readonly destroy$ = new Subject<void>();
   eventoCoords: LatLng = new LatLng(41.619819091543846, -4.759047446744906);
+  esCreador: boolean = false; // Nueva propiedad para indicar si el usuario es el creador
+  userIdLogueado: number | null = null; // ID del usuario logueado
+  mostrarModalAdmin: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
-    private serviciosService: ServiciosEventosService
+    private serviciosService: ServiciosEventosService,
+    private servicioGeneral: ServiciosService
   ) { }
 
   ngOnInit(): void {
     this.loggedInUsername = this.getCookie('username');
+    this.obtenerIdUsuarioLogueado(this.loggedInUsername); // Obtener el ID del usuario logueado
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.eventoId = +params['id'];
       this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
@@ -56,7 +63,8 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
         (data) => {
           this.evento = data;
           console.log('Detalle del evento:', this.evento);
-          this.actualizarCoordenadas(); // Llama a la función para actualizar las coordenadas
+          this.actualizarCoordenadas();
+          this.verificarCreador(); // Llamar a la función para verificar si es el creador
         },
         (error) => {
           console.error('Error al cargar el detalle del evento:', error);
@@ -74,6 +82,32 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
     } else {
       console.warn('No se recibieron latitud o longitud válidas del backend, manteniendo las coordenadas iniciales.');
     }
+  }
+
+  obtenerIdUsuarioLogueado(nombreUsuario: string): void {
+    this.servicioGeneral.getUserIdByUsername(nombreUsuario).pipe(takeUntil(this.destroy$)).subscribe(
+      (response) => {
+        this.userIdLogueado = response.id;
+        console.log('ID del usuario logueado:', this.userIdLogueado);
+        // Aquí puedes realizar cualquier acción adicional que necesites con el ID del creador
+      },
+      (error) => {
+        console.error('Error al obtener el ID del usuario logueado:', error);
+        this.userIdLogueado = null;
+      }
+    );
+  }
+
+  verificarCreador(): void {
+    this.esCreador = this.evento && this.evento.usuario_creador_id == this.userIdLogueado;
+    console.log('ID del creador del evento:', this.evento.usuario_creador_id);
+    console.log('ID del usuario logueado:', this.userIdLogueado);
+    console.log('Es creador del evento:', this.esCreador);
+  }
+
+  mostrarPepinillo(): void {
+    console.log('pepinillo');
+    this.mostrarModalAdmin = true;
   }
 
   darLike() {

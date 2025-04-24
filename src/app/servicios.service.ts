@@ -164,6 +164,10 @@ export class ServiciosService {
     return this.http.post(`${this.baseUrl}follow_unfollow.php`, { follower: followerUsername, followed: followingUsername });
   }
 
+  getUserIdByUsername(username: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}get_user_id.php?username=${username}`);
+  }
+
     // Nueva función: Registrar usuario
   // async register(username: string, firstName: string, lastName: string, lastName2: string, city: string, email: string, encryptedPassword: string): Promise<any> {
   //   const body = {
