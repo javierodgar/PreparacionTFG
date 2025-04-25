@@ -1,0 +1,52 @@
+<div class="evento-form-container">
+    <h3>Editar Evento</h3>
+    <form (submit)="onSubmit()">
+      <div *ngIf="evento.id">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" [value]="evento.id" readonly>
+      </div>
+      <div>
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo" required [(ngModel)]="evento.titulo">
+      </div>
+      <div>
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" [(ngModel)]="evento.descripcion"></textarea>
+      </div>
+      <div>
+        <label for="categoria">Categoría:</label>
+        <select id="categoria" name="categoria" required [(ngModel)]="evento.categoria">
+          <option value="">Seleccionar categoría</option>
+          <option value="Concierto">Concierto</option>
+          <option value="Obra de Teatro">Obra de Teatro</option>
+          <option value="Exposición">Exposición</option>
+          <option value="Festival">Festival</option>
+        </select>
+      </div>
+      <div>
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" required [(ngModel)]="evento.direccion" (input)="onDireccionInput($event)">
+      </div>
+      <div>
+        <label for="mapaCrear">Ubicación del Evento:</label>
+        <div #mapaCrear style="height: 200px; width: 100%;"></div>
+        <p>Puedes arrastrar el marcador para seleccionar la ubicación.</p>
+        <div class="coordinates">
+          Latitud: {{ evento.latitud | number:'1.4-4' }}, Longitud: {{ evento.longitud | number:'1.4-4' }}
+        </div>
+      </div>
+      <div>
+        <label for="fecha_inicio">Fecha de Inicio:</label>
+        <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required [(ngModel)]="evento.fecha_inicio">
+      </div>
+      <div>
+        <label for="fecha_fin">Fecha de Fin:</label>
+        <input type="text" id="fecha_fin" name="fecha_fin" required [(ngModel)]="evento.fecha_fin">
+        <small>Formato esperado: Texto (según la API de mapas)</small>
+      </div>
+      <div class="actions">
+        <button type="submit">Guardar Cambios</button>
+        <button type="button" (click)="onCancelar()">Cancelar</button>
+      </div>
+    </form>
+  </div>

@@ -3,6 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Eventos } from './eventos';
 
+interface Evento {
+  id?: number;
+  titulo: string;
+  descripcion?: string;
+  categoria: string;
+  imagen_portada?: string;
+  direccion: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  latitud: number;
+  longitud: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -13,6 +26,16 @@ export class ServiciosEventosService {
 
   obtenerEventos(): Observable<Eventos[]> {
     return this.http.get<Eventos[]>(`${this.baseUrl}obtener_eventos.php`);
+  }
+
+  obtenerEventoPorId(id: number): Observable<Evento> {
+    const url = `${this.baseUrl}obtener_evento2.php?id=${id}`;
+    return this.http.get<Evento>(url);
+  }
+
+  actualizarEvento(id: number, evento: any): Observable<any> {
+    const url = `${this.baseUrl}actualizar_evento.php?id=${id}`;
+    return this.http.put<any>(url, evento);
   }
 
   crearEvento(formData: FormData): Observable<any> {

@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { ServiciosEventosService } from '../../servicios-eventos.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
@@ -13,7 +13,8 @@ import { ModalAdminEventoComponent } from '../modal-admin-evento/modal-admin-eve
   standalone: true,
   imports: [CommonModule, DatePipe, MapaComponent, ModalAdminEventoComponent],
   templateUrl: './evento-detalle.component.html',
-  styleUrls: ['./evento-detalle.component.css']
+  styleUrls: ['./evento-detalle.component.css'],
+  
 })
 export class EventoDetalleComponent implements OnInit, OnDestroy {
   evento: any;
@@ -24,12 +25,22 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
   esCreador: boolean = false; // Nueva propiedad para indicar si el usuario es el creador
   userIdLogueado: number | null = null; // ID del usuario logueado
   mostrarModalAdmin: boolean = false;
+  mensajeRecibido: string = '';
 
   constructor(
     private route: ActivatedRoute,
     private serviciosService: ServiciosEventosService,
-    private servicioGeneral: ServiciosService
+    private servicioGeneral: ServiciosService,
+    private cdr: ChangeDetectorRef
   ) { }
+
+  actualizar(datosRecibidos: any) {
+    console.log('Función actualizar() disparada con los datos:', datosRecibidos);
+    this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
+    this.mensajeRecibido = datosRecibidos ? datosRecibidos.mensaje : 'Evento actualizado';
+    // Forzar la detección de cambios
+    this.cdr.detectChanges();
+  }
 
   ngOnInit(): void {
     this.loggedInUsername = this.getCookie('username');
@@ -99,6 +110,7 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
   }
 
   verificarCreador(): void {
+    this.obtenerIdUsuarioLogueado(this.loggedInUsername);
     this.esCreador = this.evento && this.evento.usuario_creador_id == this.userIdLogueado;
     console.log('ID del creador del evento:', this.evento.usuario_creador_id);
     console.log('ID del usuario logueado:', this.userIdLogueado);

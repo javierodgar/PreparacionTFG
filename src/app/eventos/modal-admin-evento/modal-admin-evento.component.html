@@ -27,7 +27,10 @@
     <div class="modal-body">
       <div *ngIf="activeTab === 'edicion'">
         <h3>Edición del Evento</h3>
-        <p>Aquí podrás editar los detalles del evento.</p>
+        <app-editar-evento
+        (guardarEvento)="guardarCambios($event)"
+        (cancelarEdicion)="cancelarEdicion()"
+      ></app-editar-evento>
       </div>
       <div *ngIf="activeTab === 'suscritos'">
         <h3>Gente Suscrita</h3>

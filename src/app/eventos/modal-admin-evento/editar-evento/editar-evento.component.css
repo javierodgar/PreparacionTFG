@@ -1,0 +1,109 @@
+.edicion-evento-container {
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 20px auto; /* Centrar el formulario en la página */
+    padding: 20px;
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #f9f9f9; /* Fondo claro */
+  }
+  
+  .edicion-evento-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333; /* Color del título */
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block; /* Cada label en una nueva línea */
+    margin-bottom: 5px;
+    font-weight: bold; /* Texto de la etiqueta en negrita */
+    color: #555;
+  }
+  
+  input[type="text"],
+  input[type="datetime-local"],
+  input[type="file"],
+  textarea,
+  select {
+    width: calc(100% - 12px); /* Ancho completo con un poco de margen */
+    padding: 8px;
+    border: 1px solid #ddd; /* Borde de los campos de entrada */
+    border-radius: 4px;
+    box-sizing: border-box; /* Incluir padding y border en el ancho */
+    font-size: 16px;
+  }
+  
+  textarea {
+    min-height: 100px; /* Altura mínima para el área de texto */
+  }
+  
+  .form-group.image-preview {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .form-group.image-preview img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+  }
+  
+  .buttons-container {
+    display: flex;
+    justify-content: flex-end; /* Alinear los botones a la derecha */
+    gap: 10px; /* Espacio entre los botones */
+    margin-top: 20px;
+  }
+  
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Transición suave para el hover */
+  }
+  
+  button.guardar {
+    background-color: #5cb85c; /* Verde para guardar */
+    color: white;
+  }
+  
+  button.guardar:hover {
+    background-color: #4cae4c;
+  }
+  
+  button.cancelar {
+    background-color: #d9534f; /* Rojo para cancelar */
+    color: white;
+  }
+  
+  button.cancelar:hover {
+    background-color: #c9302c;
+  }
+  
+  button.eliminar {
+    background-color: #f0ad4e; /* Naranja para eliminar (precaución) */
+    color: white;
+  }
+  
+  button.eliminar:hover {
+    background-color: #eea236;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
+  
+  /* Estilos para la selección de categoría (puedes ajustarlos)
+  select {
+    
+  } 
+  */

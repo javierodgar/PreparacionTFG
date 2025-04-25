@@ -55,4 +55,6 @@
 <app-modal-admin-evento
     [isVisible]="mostrarModalAdmin"
     (modalClosed)="mostrarModalAdmin = false"
+    (eventoId)="eventoId"
+    (recargarEvento)="actualizar($event)"
   ></app-modal-admin-evento>

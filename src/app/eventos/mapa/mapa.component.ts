@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnDestroy, ElementRef, NgZone, Input } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, ElementRef, NgZone, Input, OnChanges, SimpleChanges  } from '@angular/core';
 import { Map, TileLayer, Marker, LatLng, divIcon } from 'leaflet';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { map } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   template: '<div [id]="mapId" [style]="mapStyle"></div>',
   styleUrl: './mapa.component.css'
 })
-export class MapaComponent implements AfterViewInit, OnDestroy {
+export class MapaComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() coords: LatLng | undefined; // Recibe las coordenadas como input
   mapId = 'map-' + Math.random().toString(36).substring(2, 15);
   mapStyle = {
@@ -23,7 +23,7 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly direccionPorDefecto = 'Calle Júpiter 16, Valladolid, España'; // Renombramos para claridad
   private readonly coordenadasPorDefecto = new LatLng(41.61857080238387, -4.7601262740718555); // Coordenadas por defecto
-
+  private marker: Marker | undefined;
   constructor(private http: HttpClient, private el: ElementRef, private ngZone: NgZone) { }
 
   ngAfterViewInit(): void {
@@ -38,11 +38,34 @@ export class MapaComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Se dispara cuando cambia el valor de una propiedad @Input()
+    if (changes['coords'] && !changes['coords'].firstChange) {
+      // Si la propiedad 'coords' ha cambiado (y no es la primera vez)
+      console.log('Coordenadas recibidas en ngOnChanges:', changes['coords'].currentValue);
+      this.updateMap(changes['coords'].currentValue);
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     if (this.map) {
       this.map.remove();
+    }
+  }
+
+  private updateMap(newCoords: LatLng): void {
+    if (this.map) {
+      this.map.setView(newCoords, this.map.getZoom()); // Mantener el nivel de zoom actual
+      this.updateMarkerPosition(newCoords);
+    }
+  }
+  private updateMarkerPosition(newCoords: LatLng): void {
+    if (this.marker) {
+      this.marker.setLatLng(newCoords);
+    } else if (this.map) {
+      this.addMarker(newCoords); // Si el marcador no existe, lo añade
     }
   }
 
