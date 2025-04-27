@@ -19,7 +19,29 @@ try {
     $fecha_fin = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : '';
     $latitud = isset($_POST['latitud']) ? $_POST['latitud'] : null;
     $longitud = isset($_POST['longitud']) ? $_POST['longitud'] : null;
-    $usuario_creador_id_valor = 1; // **TODO: Obtener el ID del usuario autenticado**
+    $username = isset($_POST['usuario']) ? $_POST['usuario'] : null; // **Recibir el nombre de usuario**
+    $usuario_creador_id_valor = null;
+
+    // **Obtener el ID del usuario basado en el nombre de usuario**
+    if ($username) {
+        $query_usuario = "SELECT id FROM Usuarios WHERE usuario = :username";
+        $stmt_usuario = $pdo->prepare($query_usuario);
+        $stmt_usuario->bindParam(':username', $username);
+        $stmt_usuario->execute();
+
+        if ($stmt_usuario->rowCount() > 0) {
+            $row_usuario = $stmt_usuario->fetch(PDO::FETCH_ASSOC);
+            $usuario_creador_id_valor = $row_usuario['id'];
+        } else {
+            http_response_code(400);
+            echo json_encode(["message" => "No se encontró el usuario con el nombre de usuario proporcionado."]);
+            exit;
+        }
+    } else {
+        http_response_code(400);
+        echo json_encode(["message" => "Nombre de usuario no proporcionado."]);
+        exit;
+    }
 
     // **Implementar la lógica para guardar la imagen de portada si se subió un archivo**
     $imagen_portada = null;
@@ -57,9 +79,9 @@ try {
     }
 
     // Validaciones básicas
-    if (empty($titulo) || empty($categoria) || empty($direccion) || empty($fecha_inicio)) {
+    if (empty($titulo) || empty($categoria) || empty($direccion) || empty($fecha_inicio) || $usuario_creador_id_valor === null) {
         http_response_code(400);
-        echo json_encode(["message" => "Por favor, completa todos los campos obligatorios."]);
+        echo json_encode(["message" => "Por favor, completa todos los campos obligatorios y proporciona un nombre de usuario válido."]);
         exit;
     }
 

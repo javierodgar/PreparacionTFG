@@ -35,11 +35,12 @@
       <div *ngIf="activeTab === 'suscritos'">
         <h3>Gente Suscrita</h3>
         <p>Lista de usuarios suscritos a este evento.</p>
+        <app-listado-inscritos></app-listado-inscritos>
       </div>
       <div *ngIf="activeTab === 'eliminar'">
         <h3>Eliminar Evento</h3>
         <p>¿Estás seguro de que quieres eliminar este evento?</p>
-        <button class="confirm-delete-button">Eliminar</button>
+        <button class="confirm-delete-button" (click)="eliminarEvento()">Eliminar</button>
         <button (click)="setActiveTab('edicion')">Cancelar</button>
       </div>
     </div>

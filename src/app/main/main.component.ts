@@ -6,10 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { ServiciosService } from '../servicios.service';
 import { PostUpdateService } from '../post-update.service';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-
+import { ServiciosEventosService } from '../servicios-eventos.service';
+import { EventosSideComponent } from './eventos-side/eventos-side.component';
 @Component({
   selector: 'app-main',
-  imports: [RouterOutlet, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, ReactiveFormsModule, EventosSideComponent],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
 })
@@ -37,11 +38,14 @@ export class MainComponent {
 
   @ViewChild('hashtagInput') hashtagInput!: ElementRef; // Referencia al input de hashtags
 
+  eventosInscritos: any[] = []; // Array para almacenar los eventos inscritos
+
   constructor(
     private router: Router,
     private http: HttpClient,
     private servicios: ServiciosService,
-    private postUpdateService: PostUpdateService
+    private postUpdateService: PostUpdateService,
+    private eventoService: ServiciosEventosService
   ) { // Inyecta el servicio) {
     this.username = this.getCookie('username');
     if (this.username == null) {
@@ -50,6 +54,26 @@ export class MainComponent {
       this.obtenerImagenPerfil(); // Llama a la función al inicializar si hay un usuario logueado
     }
   }
+
+  ngOnInit() {
+    this.cargarEventosInscritos(this.username); // Cargar eventos inscritos al iniciar el componente
+  }
+
+  cargarEventosInscritos(username:any): void {
+    console.log('Cargando eventos inscritos para el usuario:', username);
+    this.eventoService.obtenerEventosInscritos(username).subscribe(
+      (eventos) => {
+        this.eventosInscritos = eventos; // Guardamos el array de eventos en la variable
+        console.log('Eventos inscritos:', this.eventosInscritos);
+        // Aquí puedes hacer cualquier otra cosa que necesites con los datos
+      },
+      (error) => {
+        console.error('Error al cargar eventos inscritos:', error);
+        // Aquí puedes manejar el error, mostrar un mensaje al usuario, etc.
+      }
+    );
+  }
+
 
   /**
    * Gets the value of a cookie with the given name.

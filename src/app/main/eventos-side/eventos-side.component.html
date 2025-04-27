@@ -1,0 +1,12 @@
+<div class="eventos-inscritos-pendientes-container">
+    <h3>Eventos Inscritos Pendientes</h3>
+    <div *ngIf="eventosPendientes.length > 0; else noEventos" class="eventos-grid">
+      <div *ngFor="let evento of eventosPendientes" class="evento-card" (click)="mostrarMensaje(evento.id)">
+        <h4 class="evento-titulo">{{ evento.titulo }}</h4>
+        <span class="evento-fecha-inicio">Comienza: {{ evento.fecha_inicio | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+    <ng-template #noEventos>
+      <p>No estás inscrito en ningún evento pendiente.</p>
+    </ng-template>
+  </div>

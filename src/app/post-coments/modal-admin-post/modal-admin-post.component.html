@@ -1,0 +1,32 @@
+<p>modal-admin-post works!</p>
+<div class="modal-overlay" *ngIf="isVisible">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-nav">
+          <button
+            [ngClass]="{'active': activeTab === 'apartado1'}"
+            (click)="setActiveTab('apartado1')"
+          >
+            editar
+          </button>
+          <button
+            [ngClass]="{'active': activeTab === 'apartado2'}"
+            (click)="setActiveTab('apartado2')"
+          >
+            eliminar
+          </button>
+        </div>
+        <button class="close-button" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="activeTab === 'apartado1'">
+          <h3>editar</h3>
+          <app-editar-post></app-editar-post>
+        </div>
+        <div *ngIf="activeTab === 'apartado2'">
+          <h3>eliminar</h3>
+          <button type="button" class="delete-button" (click)="eliminarPublicacion()">Eliminar Publicación</button>
+        </div>
+      </div>
+    </div>
+  </div>

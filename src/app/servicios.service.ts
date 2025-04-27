@@ -63,6 +63,19 @@ export class ServiciosService {
     return this.http.get<any>(`${this.baseUrl}get_post_coments.php`, { params: params, headers: this.getHeaders() });
   }
 
+
+  getPostById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/obtener_post.php?id=${id}`);
+  }
+
+  actualizarPost(id: number, post: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/actualizar_post.php?id=${id}`, post);
+  }
+
+  eliminarPost(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/eliminar_post.php?id=${id}`);
+  }
+
   saveComment(publicacionId: number, username: string, texto: string): Observable<any> {
     const body = {
       publicacion_id: publicacionId,
@@ -126,7 +139,6 @@ export class ServiciosService {
 
   search(searchTerm: string, filterOptions: string[]): Observable<any> {
     let url = `${this.baseUrl}search.php?term=${encodeURIComponent(searchTerm)}`;
-
     if (filterOptions && filterOptions.length > 0) {
       url += `&filters=${encodeURIComponent(JSON.stringify(filterOptions))}`;
     }

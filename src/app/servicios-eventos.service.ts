@@ -46,6 +46,34 @@ export class ServiciosEventosService {
     return this.http.get(`${this.baseUrl}/obtener_evento.php?id=${id}&username=${username}`);
   }
 
+  obtenerInscritosEvento(eventoId: number): Observable<any[]> {
+    const url = `${this.baseUrl}/obtener_inscritos_eventos.php?evento_id=${eventoId}`;
+    return this.http.get<any[]>(url);
+  }
+
+  eliminarInscritoEvento(eventoId: number, usuarioId: number): Observable<any> {
+    const url = `${this.baseUrl}/eliminar_inscrito_evento.php`;
+    const body = { evento_id: eventoId, usuario_id: usuarioId };
+    return this.http.post(url, body);
+  }
+
+  eliminarEvento(eventoId: number): Observable<any> {
+    const url = `${this.baseUrl}/eliminar_evento.php`;
+    const body = { evento_id: eventoId };
+    return this.http.post(url, body);
+  }
+
+  obtenerComentariosEvento(eventoId: number): Observable<any[]> {
+    const url = `${this.baseUrl}/obtener_comentarios_evento.php?evento_id=${eventoId}`;
+    return this.http.get<any[]>(url);
+  }
+
+  agregarComentarioEvento(eventoId: number, usuarioId: number, texto: string): Observable<any> {
+    const url = `${this.baseUrl}/agregar_comentario_evento.php`;
+    const body = { evento_id: eventoId, usuario_id: usuarioId, texto: texto };
+    return this.http.post(url, body);
+  }
+
   gestionarLikeDislike(eventoId: number, tipo: 'like' | 'dislike', username: string): Observable<any> {
     const body = { evento_id: eventoId, tipo: tipo, username: username };
     return this.http.post(`${this.baseUrl}/gestionar_like_dislike.php`, body);
@@ -63,5 +91,10 @@ export class ServiciosEventosService {
 
   editarEvento(formData: FormData): Observable<any> {
     return this.http.post(`${this.baseUrl}editar_evento.php`, formData);
+  }
+
+  obtenerEventosInscritos(nombreUsuario: string): Observable<any[]> {
+    const url = `${this.baseUrl}/obtener_eventos_inscrito.php`;
+    return this.http.post<any[]>(url, { usuario: nombreUsuario });
   }
 }

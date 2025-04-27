@@ -1,0 +1,26 @@
+<h2>Lista de Inscritos</h2>
+<div *ngIf="inscritos.length > 0; else noInscritos" class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>ID de Usuario</th>
+        <th>Nombre de Usuario</th>
+        <th>Fecha de Inscripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let inscrito of inscritos">
+        <td>{{ inscrito.usuario_id }}</td>
+        <td>{{ inscrito.username }}</td>
+        <td>{{ inscrito.fecha_inscripcion | date:'medium' }}</td>
+        <td>
+          <button class="eliminar-button" (click)="eliminarInscrito(inscrito.usuario_id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<ng-template #noInscritos>
+  <p>No hay usuarios inscritos en este evento.</p>
+</ng-template>

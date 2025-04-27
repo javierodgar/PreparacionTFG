@@ -35,6 +35,15 @@
             </div>
             <div class="side-section">
                 <!-- Contenido secundario (1/3) -->
+                 @if (eventosInscritos.length > 0) {
+                    <div class="eventos">
+                        <app-eventos-side
+                        [eventosInscritos]="eventosInscritos"
+                        >
+                        </app-eventos-side>
+                        
+                    </div>
+                  }
             </div>
         </div>
     </div>

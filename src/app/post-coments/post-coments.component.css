@@ -1,71 +1,89 @@
 .detalle-publicacion-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-  }
-  
-  .detalle-titulo {
-    font-size: 2.5em;
-    margin-bottom: 15px;
-    color: #333;
-    text-align: center;
-  }
-  
-  .detalle-imagen {
-    width: 100%;
-    max-height: 500px;
-    object-fit: contain;
-    margin-bottom: 20px;
-    border-radius: 4px;
-  }
-  
-  .detalle-texto {
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    color: #555;
-    white-space: pre-line; /* Respeta los saltos de línea */
-  }
-  
-  .detalle-hashtags {
-    color: #007bff;
-    margin-bottom: 15px;
-  }
-  
-  .detalle-comentarios {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-  }
-  
-  .detalle-comentarios h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  
-  .comentario {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
-  }
-  
-  .comentario strong {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .comentario small {
-    color: #777;
-  }
-  
-  .error-message {
-    color: red;
-    text-align: center;
-    margin-top: 20px;
-  }
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  position: relative; /* Necesario para posicionar el botón absolutamente */
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px; /* Añade un poco de espacio debajo del encabezado */
+}
+
+.detalle-titulo {
+  font-size: 2.5em;
+  color: #333;
+  text-align: left; /* Alinea el título a la izquierda */
+  margin-bottom: 0; /* Elimina el margen inferior del título, el espacio lo da post-header */
+  flex-grow: 1; /* Permite que el título ocupe el espacio disponible */
+}
+
+.open-modal-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px 10px; /* Añade un poco de padding para que sea más fácil hacer clic */
+  align-self: center; /* Centra verticalmente el botón con el título */
+}
+
+.detalle-imagen {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.detalle-texto {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #555;
+  white-space: pre-line;
+}
+
+.detalle-hashtags {
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.detalle-comentarios {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.detalle-comentarios h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.comentario {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.comentario strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.comentario small {
+  color: #777;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
+}

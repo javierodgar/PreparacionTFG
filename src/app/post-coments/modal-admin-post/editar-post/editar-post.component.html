@@ -1,0 +1,58 @@
+<p>editar-post works!</p>
+<h2>Editar Publicación</h2>
+
+<form [formGroup]="postForm" (ngSubmit)="guardarCambios()">
+  <div>
+    <label for="titulo">Título:</label>
+    <input type="text" id="titulo" formControlName="titulo" required>
+    <div *ngIf="postForm.controls['titulo'].invalid && (postForm.controls['titulo'].dirty || postForm.controls['titulo'].touched)">
+      <div *ngIf="postForm.controls['titulo'].errors?.['required']">
+        El título es requerido.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <label for="imagen">Imagen (opcional):</label>
+    <input type="file" id="imagen" formControlName="imagen" (change)="onFileChange($event)">
+    <div *ngIf="post?.imagen && !selectedFile">
+      <img [src]="post.imagen" alt="Imagen actual" style="max-width: 200px; max-height: 200px;">
+      <p>Imagen actual</p>
+    </div>
+    <div *ngIf="selectedFile">
+      <p>Nueva imagen seleccionada</p>
+      </div>
+  </div>
+
+  <div>
+    <label for="texto">Texto:</label>
+    <textarea id="texto" formControlName="texto" rows="5" required></textarea>
+    <div *ngIf="postForm.controls['texto'].invalid && (postForm.controls['texto'].dirty || postForm.controls['texto'].touched)">
+      <div *ngIf="postForm.controls['texto'].errors?.['required']">
+        El texto es requerido.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <label for="hashtagsInput">Añadir Hashtags:</label>
+    <input type="text" id="hashtagsInput" #hashtagInput (keyup.enter)="addHashtagFromInput()">
+  </div>
+
+  <div *ngIf="selectedHashtags.length > 0">
+    <label>Hashtags Seleccionados:</label>
+    <div *ngFor="let hashtag of selectedHashtags">
+      <span>{{ hashtag }}</span>
+      <button type="button" (click)="removeSelectedHashtag(hashtag)">Eliminar</button>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="postForm.invalid">Guardar Cambios</button>
+</form>
+
+<div *ngIf="!post">
+  Cargando publicación...
+</div>
+<div *ngIf="postId === null">
+  ID de publicación no válido.
+</div>

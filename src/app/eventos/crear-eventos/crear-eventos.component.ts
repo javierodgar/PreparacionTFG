@@ -26,8 +26,11 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
   latitud: number = 41.655;
   longitud: number = -4.725;
   direccion: string = '';
+  logedinUsername:  string = '';
 
-  constructor(private serviciosService: ServiciosEventosService, private ngZone: NgZone, private http: HttpClient) { }
+  constructor(private serviciosService: ServiciosEventosService, private ngZone: NgZone, private http: HttpClient) { 
+    this.logedinUsername = this.getCookie('username') || ''; // Obtener el nombre de usuario desde la cookie
+  }
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -57,8 +60,22 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
     console.log('Coordenadas al enviar: Latitud:', this.latitud, 'Longitud:', this.longitud);
   }
 
+  private getCookie(name: string): string | null {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(nameEQ)) {
+        return cookie.substring(nameEQ.length);
+      }
+    }
+    return null;
+  }
+
   guardarNuevoEvento(form: any) {
+    
     const nuevoEvento = {
+      usuario: this.logedinUsername,
       titulo: form.titulo.value,
       descripcion: form.descripcion.value,
       categoria: form.categoria.value,
@@ -69,6 +86,8 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
       latitud: this.latitud,
       longitud: this.longitud
     };
+
+    console.log('Nuevo evento:', nuevoEvento);
 
     this.serviciosService.crearEvento(this.formData(nuevoEvento)).subscribe(
       (response) => {
@@ -84,20 +103,21 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
   }
 
   formData(evento: any): FormData {
-    const formData = new FormData();
-    formData.append('titulo', evento.titulo);
-    formData.append('descripcion', evento.descripcion);
-    formData.append('categoria', evento.categoria);
-    if (evento.imagen_portada) {
-      formData.append('imagen_portada', evento.imagen_portada, evento.imagen_portada.name);
-    }
-    formData.append('direccion', evento.direccion);
-    formData.append('fecha_inicio', evento.fecha_inicio);
-    formData.append('fecha_fin', evento.fecha_fin || '');
-    formData.append('latitud', evento.latitud.toString());
-    formData.append('longitud', evento.longitud.toString());
-    return formData;
-  }
+        const formData = new FormData();
+        formData.append('usuario', this.logedinUsername); // <---- AÑADIDO ESTO
+        formData.append('titulo', evento.titulo);
+        formData.append('descripcion', evento.descripcion);
+        formData.append('categoria', evento.categoria);
+        if (evento.imagen_portada) {
+          formData.append('imagen_portada', evento.imagen_portada, evento.imagen_portada.name);
+        }
+        formData.append('direccion', evento.direccion);
+        formData.append('fecha_inicio', evento.fecha_inicio);
+        formData.append('fecha_fin', evento.fecha_fin || '');
+        formData.append('latitud', evento.latitud.toString());
+        formData.append('longitud', evento.longitud.toString());
+        return formData;
+      }
 
   private initMap(): void {
     if (this.mapContainer) {
@@ -142,6 +162,7 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
     ).subscribe(direccion => {
       if (direccion.length > 3) {
         this.geocodeAddress(direccion);
+        this.direccion = direccion;
       } else {
         console.warn('Dirección demasiado corta para geocodificar.');
       }

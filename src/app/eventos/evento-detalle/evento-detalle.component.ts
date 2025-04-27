@@ -7,25 +7,27 @@ import { MapaComponent } from '../mapa/mapa.component';
 import { LatLng } from 'leaflet';
 import { ServiciosService } from '../../servicios.service';
 import { ModalAdminEventoComponent } from '../modal-admin-evento/modal-admin-evento.component';
+import { FormsModule } from '@angular/forms'; // Importa FormsModule para el formulario
 
 @Component({
   selector: 'app-evento-detalle',
   standalone: true,
-  imports: [CommonModule, DatePipe, MapaComponent, ModalAdminEventoComponent],
+  imports: [CommonModule, DatePipe, MapaComponent, ModalAdminEventoComponent, FormsModule], // Añade FormsModule
   templateUrl: './evento-detalle.component.html',
   styleUrls: ['./evento-detalle.component.css'],
-  
 })
 export class EventoDetalleComponent implements OnInit, OnDestroy {
   evento: any;
   eventoId: number = 0;
-  loggedInUsername: any; // se remplaza el nombre de usuario recogiendolo desde la cookie
+  loggedInUsername: any;
+  userIdLogueado: number | null = null;
   private readonly destroy$ = new Subject<void>();
   eventoCoords: LatLng = new LatLng(41.619819091543846, -4.759047446744906);
-  esCreador: boolean = false; // Nueva propiedad para indicar si el usuario es el creador
-  userIdLogueado: number | null = null; // ID del usuario logueado
+  esCreador: boolean = false;
   mostrarModalAdmin: boolean = false;
   mensajeRecibido: string = '';
+  nuevoComentario: string = ''; // Para el input del nuevo comentario
+  comentarios: any[] = []; // Para almacenar los comentarios del evento
 
   constructor(
     private route: ActivatedRoute,
@@ -38,16 +40,16 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
     console.log('Función actualizar() disparada con los datos:', datosRecibidos);
     this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
     this.mensajeRecibido = datosRecibidos ? datosRecibidos.mensaje : 'Evento actualizado';
-    // Forzar la detección de cambios
     this.cdr.detectChanges();
   }
 
   ngOnInit(): void {
     this.loggedInUsername = this.getCookie('username');
-    this.obtenerIdUsuarioLogueado(this.loggedInUsername); // Obtener el ID del usuario logueado
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.eventoId = +params['id'];
+      this.obtenerIdUsuarioLogueado(this.loggedInUsername);
       this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
+      this.cargarComentariosEvento(this.eventoId); // Cargar los comentarios al inicializar
     });
   }
 
@@ -75,7 +77,7 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
           this.evento = data;
           console.log('Detalle del evento:', this.evento);
           this.actualizarCoordenadas();
-          this.verificarCreador(); // Llamar a la función para verificar si es el creador
+          this.verificarCreador();
         },
         (error) => {
           console.error('Error al cargar el detalle del evento:', error);
@@ -100,7 +102,6 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
       (response) => {
         this.userIdLogueado = response.id;
         console.log('ID del usuario logueado:', this.userIdLogueado);
-        // Aquí puedes realizar cualquier acción adicional que necesites con el ID del creador
       },
       (error) => {
         console.error('Error al obtener el ID del usuario logueado:', error);
@@ -110,9 +111,8 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
   }
 
   verificarCreador(): void {
-    this.obtenerIdUsuarioLogueado(this.loggedInUsername);
     this.esCreador = this.evento && this.evento.usuario_creador_id == this.userIdLogueado;
-    console.log('ID del creador del evento:', this.evento.usuario_creador_id);
+    console.log('ID del creador del evento:', this.evento ? this.evento.usuario_creador_id : null);
     console.log('ID del usuario logueado:', this.userIdLogueado);
     console.log('Es creador del evento:', this.esCreador);
   }
@@ -188,5 +188,37 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
 
   get usuarioLogueadoId(): boolean {
     return !!this.loggedInUsername;
+  }
+
+  // Funciones para la gestión de comentarios
+  cargarComentariosEvento(eventoId: number) {
+    this.serviciosService.obtenerComentariosEvento(eventoId).pipe(takeUntil(this.destroy$)).subscribe(
+      (data) => {
+        this.comentarios = data;
+        console.log('Comentarios del evento:', this.comentarios);
+      },
+      (error) => {
+        console.error('Error al cargar los comentarios:', error);
+      }
+    );
+  }
+
+  agregarComentario() {
+    if (this.loggedInUsername && this.userIdLogueado && this.nuevoComentario.trim() !== '') {
+      this.serviciosService.agregarComentarioEvento(this.eventoId, this.userIdLogueado, this.nuevoComentario)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (response) => {
+            console.log('Comentario agregado:', response);
+            this.nuevoComentario = ''; // Limpiar el input
+            this.cargarComentariosEvento(this.eventoId); // Recargar los comentarios
+          },
+          (error) => {
+            console.error('Error al agregar el comentario:', error);
+          }
+        );
+    } else {
+      console.warn('Debes estar logueado y escribir un comentario.');
+    }
   }
 }

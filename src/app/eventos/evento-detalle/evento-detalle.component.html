@@ -41,7 +41,38 @@
     </div>
 
     <app-mapa [coords]="eventoCoords"></app-mapa>
-  </div>
+
+    <div class="comentarios-section" *ngIf="usuarioLogueadoId">
+      <h3>Comentarios</h3>
+      <div class="nuevo-comentario">
+        <h4>Añadir un comentario</h4>
+        <textarea [(ngModel)]="nuevoComentario" placeholder="Escribe tu comentario aquí"></textarea>
+        <button (click)="agregarComentario()">Publicar comentario</button>
+      </div>
+    
+      <div class="comentarios-listado" *ngIf="comentarios.length > 0; else noComentarios">
+        <div class="comentario" *ngFor="let comentario of comentarios">
+          <p><strong>Usuario {{ comentario.usuario_id }}:</strong> {{ comentario.texto }}</p>
+          <small>{{ comentario.fecha_creacion | date: 'medium' }}</small>
+        </div>
+      </div>
+      <ng-template #noComentarios>
+        <p>No hay comentarios para este evento.</p>
+      </ng-template>
+    </div>
+    <div class="comentarios-section" *ngIf="!usuarioLogueadoId">
+      <h3>Comentarios</h3>
+      <p>Debes estar logueado para ver y añadir comentarios.</p>
+      <div class="comentarios-listado" *ngIf="comentarios.length > 0; else noComentarios">
+        <div class="comentario" *ngFor="let comentario of comentarios">
+          <p><strong>Usuario {{ comentario.usuario_id }}:</strong> {{ comentario.texto }}</p>
+          <small>{{ comentario.fecha_creacion | date: 'medium' }}</small>
+        </div>
+      </div>
+      <ng-template #noComentarios>
+        <p>No hay comentarios para este evento.</p>
+      </ng-template>
+    </div>
 </div>
 
 <div class="evento-detalle-container" *ngIf="!evento && eventoId > 0">
@@ -53,8 +84,8 @@
 </div>
 
 <app-modal-admin-evento
-    [isVisible]="mostrarModalAdmin"
-    (modalClosed)="mostrarModalAdmin = false"
-    (eventoId)="eventoId"
-    (recargarEvento)="actualizar($event)"
-  ></app-modal-admin-evento>
+  [isVisible]="mostrarModalAdmin"
+  (modalClosed)="mostrarModalAdmin = false"
+  (eventoId)="eventoId"
+  (recargarEvento)="actualizar($event)"
+></app-modal-admin-evento>

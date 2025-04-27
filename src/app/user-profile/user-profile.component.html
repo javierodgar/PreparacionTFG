@@ -27,19 +27,21 @@
       </form>
     </div>
   
-    <div class="user-posts">
-      <h3>Tus publicaciones</h3>
-      <div *ngIf="posts.length === 0">
-        <p>No tienes publicaciones aún.</p>
-      </div>
-      <div *ngFor="let post of posts" class="post">
-        <div (click)="goToPost(post.id)">
-            <h3>{{ post.titulo }}</h3>
-            <img *ngIf="post.imagen" [src]="dataUrl + post.imagen" alt="Imagen de publicación" />
-            <p>{{ post.texto }}</p>
-            <div *ngIf="post.hashtags" class="hashtags">{{ post.hashtags }}</div>
-        </div>
-      </div>
+    <div class="tab-navigation">
+      <button [class.active]="showPosts" (click)="toggleView('posts')">Publicaciones</button>
+      <button [class.active]="!showPosts" (click)="toggleView('events')">Eventos</button>
+    </div>
+  
+    <div *ngIf="showPosts">
+      <app-user-posts
+        [posts]="posts"
+        [dataUrl]="dataUrl"
+        (viewPost)="handleViewPost($event)"
+      ></app-user-posts>
+    </div>
+  
+    <div *ngIf="!showPosts">
+      <p>Contenido de los eventos del usuario (se implementará después)</p>
     </div>
   
     <div class="modal" *ngIf="showEditModal">

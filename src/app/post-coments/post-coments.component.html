@@ -1,5 +1,10 @@
-
-  <h1 class="detalle-titulo">{{ title }}</h1>
+<div class="detalle-publicacion-container">
+  <div class="post-header">
+    <h1 class="detalle-titulo">{{ title }}</h1>
+    @if(esCreador){
+      <button class="open-modal-button" (click)="openGenericModal()">...</button>
+    }
+  </div>
   @if (img) {
     <img [src]="dataUrl + img" alt="Imagen de la publicación" class="detalle-imagen">
   }
@@ -48,8 +53,9 @@
     <p>no exsisten comentarios, se el primero</p>
   }
 
-  
-
-  
-
-  
+  <app-modal-admin-post
+    [isVisible]="showGenericModal"
+    (modalClosed)="showGenericModal = false"
+  >
+  </app-modal-admin-post>
+</div>

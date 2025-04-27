@@ -33,9 +33,9 @@ if (isset($_FILES["imagen"]) && $_FILES["imagen"]["error"] === UPLOAD_ERR_OK) {
     }
     $imageName = uniqid() . "_" . basename($_FILES["imagen"]["name"]); // Nombre único para evitar conflictos
     $image = $uploadDir . $imageName;
-    if (!move_uploaded_file($_FILES["imagen"]["tmp_name"], $image)) {
+    if ($_FILES["imagen"]["error"] !== UPLOAD_ERR_OK) {
         http_response_code(500);
-        echo json_encode(["message" => "Error al subir la imagen"]);
+        echo json_encode(["message" => "Error al subir la imagen: " . $_FILES["imagen"]["error"]]);
         exit;
     }
 }

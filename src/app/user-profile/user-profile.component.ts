@@ -5,10 +5,11 @@ import { ServiciosService } from '../servicios.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PostUpdateService } from '../post-update.service';
+import { UserPostsComponent } from './user-posts/user-posts.component';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UserPostsComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -22,9 +23,9 @@ export class UserProfileComponent {
   showEditModal: boolean = false;
   username: string | null = null;
   profileImage: string | null = null;
+  showPosts: boolean = true; // Para controlar la visibilidad de los posts y eventos
 
   private postUpdateSubscription: Subscription;
-
 
   //formulario para edicion de usuario
   editForm = new FormGroup({
@@ -60,11 +61,16 @@ export class UserProfileComponent {
     this.username = this.getCookie('username');
     if (!this.username) {
       alert('No hay usuario logeado. Por favor, inicia sesión.');
-        this.router.navigate(['/']);
-
+      this.router.navigate(['/']);
     }
     this.loadUserData();
     this.loadProfileImage();
+  }
+
+  ngOnDestroy(): void {
+    if (this.postUpdateSubscription) {
+      this.postUpdateSubscription.unsubscribe();
+    }
   }
 
 
@@ -80,13 +86,13 @@ export class UserProfileComponent {
     return null;
   }
 
-  
-/**
- * Loads the posts of the currently logged-in user from the server.
- * If the username is available, it makes a request to fetch user data and updates the posts array.
- * Logs a message if no posts are found or if there is an error in retrieving posts.
- * Warns if there is no logged-in user.
- */  
+
+  /**
+   * Loads the posts of the currently logged-in user from the server.
+   * If the username is available, it makes a request to fetch user data and updates the posts array.
+   * Logs a message if no posts are found or if there is an error in retrieving posts.
+   * Warns if there is no logged-in user.
+   */
   loadPosts() {
     if (this.username) {
       this.servicios.getUserData(this.username).subscribe({
@@ -187,7 +193,7 @@ export class UserProfileComponent {
    * profile_image field in the edit form with the selected file.
    * @param event The event object from the file change event.
    */
-    onFileChange(event: Event) {
+  onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.editForm.patchValue({ profile_image: input.files[0] });
@@ -266,5 +272,13 @@ export class UserProfileComponent {
 
   goToPost(id: number) {
     this.router.navigate(['main/big_post', id]);
+  }
+
+  handleViewPost(postId: number) {
+    this.goToPost(postId);
+  }
+
+  toggleView(view: 'posts' | 'events') {
+    this.showPosts = view === 'posts';
   }
 }

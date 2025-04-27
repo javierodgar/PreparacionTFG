@@ -4,10 +4,10 @@ import { ServiciosService } from '../servicios.service';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-
+import { ModalAdminPostComponent } from './modal-admin-post/modal-admin-post.component';
 @Component({
   selector: 'app-post-coments',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalAdminPostComponent],
   templateUrl: './post-coments.component.html',
   styleUrl: './post-coments.component.css'
 })
@@ -24,14 +24,22 @@ export class PostComentsComponent implements OnInit, OnDestroy {
   dataUrl = 'http://localhost/dataTFG/';
   errorLoading: boolean = false;
   newCommentText: string = ''; // Variable para el texto del nuevo comentario
-  username: any; 
+  username: any; //usuario logueado
   editingCommentId: number | null = null; // ID del comentario que se está editando
   editedCommentText: string = ''; // Texto del comentario en edición
+  showGenericModal: boolean = false; // Control de visibilidad del modal
+  esCreador: boolean = false; // Variable para verificar si el usuario es el creador del evento
+  usuario: any; // Variable para almacenar el nombre de usuario de la publicación
+  
 
   private routeSubscription: Subscription | undefined;
 
   constructor(private route: ActivatedRoute, private serviciosService: ServiciosService) {}
 
+  openGenericModal() {
+    this.showGenericModal = true;
+  }
+  
   ngOnInit(): void {
     this.username = this.getCookie('username');
     this.routeSubscription = this.route.paramMap.subscribe(params => {
@@ -39,8 +47,18 @@ export class PostComentsComponent implements OnInit, OnDestroy {
       if (idParam) {
         this.publicacionId = +idParam; // Convertir el parámetro de string a número
         this.loadPublicationDetails();
+        
       }
     });
+    
+  }
+  
+
+  verificarCreador(): void {
+    this.esCreador = this.usuario == this.username;
+    console.log('Usuario logueado:', this.username);
+    console.log('Usuario de la publicación:', this.usuario);
+    console.log('Es creador del evento:', this.esCreador);
   }
 
   ngOnDestroy(): void {
@@ -59,7 +77,8 @@ export class PostComentsComponent implements OnInit, OnDestroy {
           this.img = this.publicacionConComentarios.imagen;
           this.text = this.publicacionConComentarios.texto;
           this.editingCommentId = null;
-
+          this.usuario = this.publicacionConComentarios.nombre_usuario_publicacion;
+          
           // Los hashtags ahora son un array directamente
           this.hastagh = this.publicacionConComentarios.hashtags || [];
 
@@ -67,6 +86,7 @@ export class PostComentsComponent implements OnInit, OnDestroy {
           this.likes = this.publicacionConComentarios.total_likes;
           this.dislikes = this.publicacionConComentarios.total_dislikes;
           this.errorLoading = false;
+          this.verificarCreador(); // Verificar si el usuario es el creador de la publicación
         },
         (error) => {
           console.error('Error al cargar la publicación con comentarios:', error);
@@ -74,6 +94,7 @@ export class PostComentsComponent implements OnInit, OnDestroy {
           this.publicacionConComentarios = null;
         }
       );
+      
     }
   }
 
