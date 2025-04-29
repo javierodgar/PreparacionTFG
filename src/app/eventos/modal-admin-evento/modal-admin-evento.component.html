@@ -16,10 +16,10 @@
           Gente Suscrita
         </button>
         <button
-          [ngClass]="{'active': activeTab === 'eliminar'}"
-          (click)="setActiveTab('eliminar')"
+          [ngClass]="{'active': activeTab === 'estados'}"
+          (click)="setActiveTab('estados')"
         >
-          Eliminar
+          Estados
         </button>
       </div>
       <button class="close-button" (click)="closeModal()">×</button>
@@ -37,11 +37,12 @@
         <p>Lista de usuarios suscritos a este evento.</p>
         <app-listado-inscritos></app-listado-inscritos>
       </div>
-      <div *ngIf="activeTab === 'eliminar'">
-        <h3>Eliminar Evento</h3>
-        <p>¿Estás seguro de que quieres eliminar este evento?</p>
+      <div *ngIf="activeTab === 'estados'">
+        <h3>Estados Evento</h3>
+        <h4>Eliminar Evento</h4>
         <button class="confirm-delete-button" (click)="eliminarEvento()">Eliminar</button>
-        <button (click)="setActiveTab('edicion')">Cancelar</button>
+        <h4>Cancelar Evento</h4>
+        <button class="confirm-delete-button" (click)="actualizarEstado(eventoId, nuevoEstado)">{{cancelarReanudar}}</button>
       </div>
     </div>
   </div>

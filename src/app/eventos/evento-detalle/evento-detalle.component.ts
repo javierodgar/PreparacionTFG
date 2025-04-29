@@ -28,6 +28,7 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
   mensajeRecibido: string = '';
   nuevoComentario: string = ''; // Para el input del nuevo comentario
   comentarios: any[] = []; // Para almacenar los comentarios del evento
+  valoracionUsuarioLogeado: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +46,7 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loggedInUsername = this.getCookie('username');
+    this.valoracionUsuarioLogeado = parseInt(this.getCookie('valoracionUsuario') || '0');
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.eventoId = +params['id'];
       this.obtenerIdUsuarioLogueado(this.loggedInUsername);
@@ -154,19 +156,50 @@ export class EventoDetalleComponent implements OnInit, OnDestroy {
     }
   }
 
-  inscribirse() {
-    if (this.loggedInUsername) {
-      this.serviciosService.inscribirseEvento(this.eventoId, this.loggedInUsername).pipe(takeUntil(this.destroy$)).subscribe(
-        (response) => {
-          console.log('Respuesta de inscripción:', response);
-          this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
-        },
-        (error) => {
-          console.error('Error al inscribirse:', error);
+  inscribirse(estado: number, fecha_fin: string) {
+    
+    if(estado == 2){
+      if (confirm('El evento finaliza el ' + fecha_fin + '. ¿Seguro que quieres inscribirte?')) {
+        // Si el usuario confirma, continua con la inscripción
+        if (this.loggedInUsername) {
+          if(this.valoracionUsuarioLogeado >= 4.000){
+            this.serviciosService.inscribirseEvento(this.eventoId, this.loggedInUsername).pipe(takeUntil(this.destroy$)).subscribe(
+            (response) => {
+              console.log('Respuesta de inscripción:', response);
+              this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
+            },
+            (error) => {
+              console.error('Error al inscribirse:', error);
+            }
+          );
+          } else {
+            console.warn('No puedes inscribirte si no tienes una valoración de 4 o superior.');
+          }
+        } else {
+          console.warn('Debes estar logueado para inscribirte.');
         }
-      );
-    } else {
-      console.warn('Debes estar logueado para inscribirte.');
+      } else {
+        // Si el usuario no confirma, sale de la función
+        console.log('Inscripción cancelada');
+      }
+    }else{
+      if (this.loggedInUsername) {
+        if(this.valoracionUsuarioLogeado >= 4.000){
+          this.serviciosService.inscribirseEvento(this.eventoId, this.loggedInUsername).pipe(takeUntil(this.destroy$)).subscribe(
+          (response) => {
+            console.log('Respuesta de inscripción:', response);
+            this.cargarDetalleEvento(this.eventoId, this.loggedInUsername);
+          },
+          (error) => {
+            console.error('Error al inscribirse:', error);
+          }
+        );
+        } else {
+          console.warn('No puedes inscribirte si no tienes una valoración de 4 o superior.');
+        }
+      } else {
+        console.warn('Debes estar logueado para inscribirte.');
+      }
     }
   }
 

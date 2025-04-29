@@ -6,10 +6,11 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PostUpdateService } from '../post-update.service';
 import { UserPostsComponent } from './user-posts/user-posts.component';
+import { UserEventsComponent } from './user-events/user-events.component';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UserPostsComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UserPostsComponent, UserEventsComponent],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css'
 })
@@ -18,6 +19,7 @@ export class UserProfileComponent {
   dataUrl = 'http://localhost/dataTFG/';
   userData: any = null;
   posts: any[] = [];
+  events: any[] = [];
   followersCount: number = 0;
   followingCount: number = 0;
   showEditModal: boolean = false;
@@ -124,6 +126,7 @@ export class UserProfileComponent {
         if (data.user) {
           this.userData = data.user;
           this.posts = data.posts;
+          this.events = data.events;
           this.followersCount = data.followersCount;
           this.followingCount = data.followingCount;
           this.editForm.patchValue({
@@ -151,7 +154,7 @@ export class UserProfileComponent {
    * Logs an error if there is an error loading the image.
    */
   loadProfileImage() {
-    this.servicios.getProfileImage(this.username!).subscribe({
+    this.servicios.getProfileImageValoracion(this.username!).subscribe({
       next: (data) => {
         this.profileImage = data.profile_image || null;
       },
@@ -277,6 +280,15 @@ export class UserProfileComponent {
   handleViewPost(postId: number) {
     this.goToPost(postId);
   }
+
+  goToEvent(id:number){
+    this.router.navigate(['main/big_event', id]);
+  }
+
+  handleViewEvent(eventId: number) {
+    this.goToEvent(eventId);
+  }
+
 
   toggleView(view: 'posts' | 'events') {
     this.showPosts = view === 'posts';

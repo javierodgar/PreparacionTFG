@@ -81,9 +81,9 @@ CREATE TABLE IF NOT EXISTS PublicacionHashtag (
     FOREIGN KEY (hashtag_id) REFERENCES Hashtags(id) ON DELETE CASCADE
 );
 
--- #############################################################################
+-- ###############################################################################
 -- ###################### TABLAS PARA LA GESTIÓN DE EVENTOS ######################
--- #############################################################################
+-- ###############################################################################
 
 -- Tabla de Eventos (MODIFICADA)
 CREATE TABLE IF NOT EXISTS Eventos (
@@ -98,7 +98,9 @@ CREATE TABLE IF NOT EXISTS Eventos (
     fecha_fin VARCHAR(255) NOT NULL, -- Almacenado como STRING para la API de mapas
     usuario_creador_id INT NOT NULL,
     coordenadas POINT,
-    FOREIGN KEY (usuario_creador_id) REFERENCES Usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE
+    estado_id INT,
+    FOREIGN KEY (usuario_creador_id) REFERENCES Usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (estado_id) REFERENCES EstadosEvento(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tabla de Inscripciones a Eventos (sin cambios)
@@ -132,6 +134,39 @@ CREATE TABLE IF NOT EXISTS LikesDislikesEventos (
     FOREIGN KEY (evento_id) REFERENCES Eventos(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES Usuarios(id) ON DELETE CASCADE,
     UNIQUE KEY unique_like_dislike_evento (evento_id, usuario_id) -- Un usuario solo puede dar un like/dislike por evento
+);
+
+--Tabla para almacenar los estados de los eventos
+CREATE TABLE IF NOT EXISTS EstadosEvento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE -- Nombre del estado (ej: "Borrador", "Publicado", "Cancelado", "Finalizado")
+);
+
+--estados predefinidos para los eventos
+INSERT INTO EstadosEvento (id, nombre) VALUES (1, 'Creado');
+INSERT INTO EstadosEvento (id, nombre) VALUES (2,'En Proceso');
+INSERT INTO EstadosEvento (id, nombre) VALUES (3,'Finalizado');
+INSERT INTO EstadosEvento (id, nombre) VALUES (4,'Cancelado');
+
+
+ALTER TABLE Eventos
+ADD COLUMN estado_id INT;
+
+ALTER TABLE Eventos
+ADD FOREIGN KEY (estado_id) REFERENCES EstadosEvento(id) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- ################################################################################################
+-- ###################### TABLAS PARA LA GESTIÓN DE VALORACIONES DE USUARIOS ######################
+-- ################################################################################################
+
+CREATE TABLE IF NOT EXISTS ValoracionesLog (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_valorador_id INT NOT NULL,
+    usuario_valorado_id INT NOT NULL,
+    tipo_valoracion ENUM('bueno', 'malo') NOT NULL,
+    fecha_valoracion DATE NOT NULL,
+    FOREIGN KEY (usuario_valorador_id) REFERENCES Usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (usuario_valorado_id) REFERENCES Usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

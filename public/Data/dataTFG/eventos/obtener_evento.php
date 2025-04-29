@@ -41,12 +41,15 @@ try {
                 ST_Y(e.coordenadas) AS longitud,
                 u.usuario AS nombre_creador_usuario,
                 u.profile_image AS creador_profile_image,
+                est.nombre,
+                est.id as estado_id,
                 (SELECT COUNT(*) FROM LikesDislikesEventos WHERE evento_id = e.id AND tipo = 'like') AS total_likes,
                 (SELECT COUNT(*) FROM LikesDislikesEventos WHERE evento_id = e.id AND tipo = 'dislike') AS total_dislikes,
                 (SELECT COUNT(*) FROM InscripcionesEventos WHERE evento_id = e.id AND usuario_id = :usuario_logueado_id AND :usuario_logueado_id IS NOT NULL) AS esta_inscrito,
                 (SELECT tipo FROM LikesDislikesEventos WHERE evento_id = e.id AND usuario_id = :usuario_logueado_id AND :usuario_logueado_id IS NOT NULL) AS mi_like_dislike
               FROM Eventos e
               LEFT JOIN Usuarios u ON e.usuario_creador_id = u.id
+              left join estadosevento est on est.id = e.estado_id
               WHERE e.id = :evento_id";
 
     $stmt = $pdo->prepare($query);

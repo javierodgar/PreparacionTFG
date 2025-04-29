@@ -23,7 +23,7 @@ if (empty($username)) {
 require_once 'db_config.php';
 
 try {
-    $stmt = $pdo->prepare("SELECT profile_image FROM Usuarios WHERE usuario = :username");
+    $stmt = $pdo->prepare("SELECT profile_image, valoracion_global FROM Usuarios WHERE usuario = :username");
     $stmt->bindParam(":username", $username);
     $stmt->execute();
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -32,7 +32,8 @@ try {
         http_response_code(200);
         echo json_encode([
             "message" => "Imagen de perfil obtenida",
-            "profile_image" => $userData['profile_image']
+            "profile_image" => $userData['profile_image'],
+            "valoracion_global" => $userData['valoracion_global']
         ]);
     } else {
         http_response_code(404);

@@ -14,13 +14,17 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class ModalAdminEventoComponent implements OnInit, OnDestroy {
   @Input() isVisible: boolean = false;
+  @Input() estado: number = 0;
   @Output() recargarEvento = new EventEmitter<any>();
   @Output() modalClosed = new EventEmitter<void>();
   @Output() eventoGuardado = new EventEmitter<any>();
-  activeTab: 'edicion' | 'suscritos' | 'eliminar' = 'edicion';
-  eventoId: number | null = null;
+  @Output() estadoActualizado = new EventEmitter<any>();
+  activeTab: 'edicion' | 'suscritos' | 'estados' = 'edicion';
+  eventoId: number = 0;
   loggedInUsername = '';
   private readonly destroy$ = new Subject<void>();
+  cancelarReanudar: string = '';
+  nuevoEstado:number = 0;
 
   constructor(
     private serviciosEventosService: ServiciosEventosService,
@@ -39,9 +43,20 @@ export class ModalAdminEventoComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  seleccionarEstado(){
+    if(this.estado == 1){
+      this.cancelarReanudar = 'cancelar';
+      this.nuevoEstado = 4;
+    } else if(this.estado == 4){
+      this.cancelarReanudar = 'reanudar';
+      this.nuevoEstado = 1;
+    }
+  }
+
   closeModal(): void {
     this.isVisible = false;
     this.modalClosed.emit();
+    this.recargarEvento.emit('recargar');
   }
 
   ngOnInit(): void {
@@ -57,6 +72,7 @@ export class ModalAdminEventoComponent implements OnInit, OnDestroy {
         console.warn('No se encontró el ID del evento en la URL.');
       }
     });
+    this.seleccionarEstado();
   }
 
   ngOnDestroy(): void {
@@ -75,8 +91,29 @@ export class ModalAdminEventoComponent implements OnInit, OnDestroy {
     this.setActiveTab('edicion');
   }
 
-  setActiveTab(tab: 'edicion' | 'suscritos' | 'eliminar'): void {
+  setActiveTab(tab: 'edicion' | 'suscritos' | 'estados'): void {
     this.activeTab = tab;
+  }
+
+  actualizarEstado(eventoId: number, estadoId: number) {
+    this.serviciosEventosService.actualizarEstadoEvento(eventoId, estadoId).subscribe({
+      next: (response) => {
+        console.log('Respuesta del servidor:', response);
+        if(estadoId == 1){
+          this.cancelarReanudar = 'cancelar';
+          this.nuevoEstado = 4;
+        } else if(estadoId == 4){
+          this.cancelarReanudar = 'reanudar';
+          this.nuevoEstado = 1;
+        }
+        this.recargarEvento.emit('recargar');
+
+      },
+      error: (error) => {
+        console.error('Error al actualizar el estado del evento:', error);
+        // Aquí puedes manejar el error, por ejemplo, mostrar un mensaje al usuario.
+      }
+    });
   }
 
   eliminarEvento(): void {

@@ -9,13 +9,11 @@
     <p><strong>Ciudad:</strong> {{ userData.ciudad_residencia }}</p>
     <p *ngIf="valoracionGlobal !== null"><strong>Valoración:</strong> {{ valoracionGlobal.toFixed(3) }}</p>
 
-    <button *ngIf="getCurrentLoggedInUsername() !== userData.usuario"
-            (click)="toggleFollow()">
-      {{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}
-    </button>
-
-    <button (click)="marcarBuenUsuario()">Buen Usuario (+0.1)</button>
-    <button (click)="marcarMalUsuario()">Mal Usuario (-0.1)</button>
+    <div class="follow-actions" *ngIf="getCurrentLoggedInUsername() !== username">
+      <button (click)="toggleFollow()">{{ isFollowing ? 'Dejar de seguir' : 'Seguir' }}</button>
+      <button (click)="marcarUsuario('bueno')">Marcar como buen usuario</button>
+      <button (click)="marcarUsuario('malo')">Marcar como mal usuario</button>
+    </div>
   </div>
   <ng-template #noUser>
     <div class="user-data">
@@ -23,18 +21,24 @@
     </div>
   </ng-template>
 
-  <div class="user-posts">
-    <h3>Publicaciones</h3>
-    <div *ngIf="posts.length === 0">
-      <p>El usuario no tiene Publicaciones</p>
-    </div>
-    <div *ngFor="let post of posts" class="post">
-      <div (click)="goToPost(post.id)">
-        <h3>{{ post.titulo }}</h3>
-        <img *ngIf="post.imagen" [src]="dataUrl + post.imagen" alt="Imagen de publicación" />
-        <p>{{ post.texto }}</p>
-        <div *ngIf="post.hashtags" class="hashtags">{{ post.hashtags }}</div>
-      </div>
-    </div>
+  <div class="tab-navigation">
+    <button [class.active]="showPosts" (click)="toggleView('posts')">Publicaciones</button>
+    <button [class.active]="!showPosts" (click)="toggleView('events')">Eventos</button>
+  </div>
+
+  <div *ngIf="showPosts">
+    <app-user-posts-general
+      [posts]="posts"
+      [dataUrl]="dataUrl"
+      (viewPost)="handleViewPost($event)"
+    ></app-user-posts-general>
+  </div>
+
+  <div *ngIf="!showPosts">
+    <app-user-events-general
+      [events]="events"
+      [dataUrl]="dataUrl"
+      (viewEvent)="handleViewEvent($event)"
+    ></app-user-events-general>
   </div>
 </div>

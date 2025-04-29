@@ -3,7 +3,7 @@ body {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
     color: white;
-    background: url('https://hips.hearstapps.com/hmg-prod/images/porsche-mission-x-1-64ed928f110a6.jpg') no-repeat fixed center;
+    background: url("/imgs/background_arrive.webp") no-repeat fixed center;
     background-size: cover;
     height: 100vh;
     display: flex;

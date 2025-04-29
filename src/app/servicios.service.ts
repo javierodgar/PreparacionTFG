@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +14,18 @@ export class ServiciosService {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
+  }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(nameEQ)) {
+        return cookie.substring(nameEQ.length);
+      }
+    }
+    return null;
   }
 
   // Obtener datos del usuario por username usando promesas
@@ -49,11 +61,19 @@ export class ServiciosService {
     return this.http.post(`${this.baseUrl}get_user_data.php`, body, { headers: this.getHeaders() });
   }
 
+  getPublicacionesDestacadas(usuarioLogueado: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/obtener_publicaciones_destacadas.php?usuario=${usuarioLogueado}`);
+  }
+
+  getEventosPopulares(usuarioCreadorExcluir: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/obtener_eventos_populares.php?excluir_usuario=${usuarioCreadorExcluir}`);
+  }
+
   updateUser(userData: any): Observable<any> {
     return this.http.post(`${this.baseUrl}update_user.php`, userData);
   }
 
-  getProfileImage(username: string): Observable<any> {
+  getProfileImageValoracion(username: string): Observable<any> {
     const body = { username };
     return this.http.post(`${this.baseUrl}get_profile_image.php`, body, { headers: this.getHeaders() });
   }
@@ -133,6 +153,7 @@ export class ServiciosService {
     return this.http.get<any[]>(url, { headers: this.getHeaders() });
   }
 
+  //en proceso de depuracion creo que este servicvio no es necesario pero por el momento le mantego
   obtenerImagenPerfil(username: string): Observable<any> {
     return this.http.post(`${this.baseUrl}get_profile_image.php`, { username });
   }
@@ -178,6 +199,19 @@ export class ServiciosService {
 
   getUserIdByUsername(username: string): Observable<any> {
     return this.http.get(`${this.baseUrl}get_user_id.php?username=${username}`);
+  }
+
+  marcarUsuario(usernameValorado: string, tipoValoracion: 'bueno' | 'malo'): Observable<any> {
+    const usernameValorador = this.getCookie('username');
+    if (!usernameValorador) {
+      console.error('Usuario valorador no encontrado.');
+      return of({ message: 'Error: Usuario valorador no encontrado.' });
+    }
+    return this.http.post(this.baseUrl + 'marcar_valoracion.php', {
+      username_valorador: usernameValorador,
+      username_valorado: usernameValorado,
+      tipo_valoracion: tipoValoracion
+    });
   }
 
     // Nueva función: Registrar usuario

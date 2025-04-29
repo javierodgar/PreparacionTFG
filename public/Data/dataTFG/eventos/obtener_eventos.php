@@ -10,7 +10,10 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 require_once '../db_config.php'; // Ajusta la ruta si es necesario
 
 try {
-    $stmt = $pdo->prepare("SELECT id, titulo, descripcion, categoria, imagen_portada, direccion, fecha_creacion, fecha_inicio, fecha_fin, usuario_creador_id FROM Eventos");
+    $stmt = $pdo->prepare("SELECT evt.id, evt.titulo, evt.descripcion, evt.categoria, evt.imagen_portada, evt.direccion, evt.fecha_creacion, evt.fecha_inicio, evt.fecha_fin, evt.usuario_creador_id, evt.estado_id, e.nombre FROM Eventos as evt
+	inner join estadosevento e on e.id = evt.estado_id
+    where evt.estado_id = 1 or evt.estado_id = 2;
+    ");
     $stmt->execute();
     $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

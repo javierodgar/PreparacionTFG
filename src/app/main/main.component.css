@@ -116,6 +116,8 @@ body {
     background-color: #fff;
     padding: 20px;
     border-left: 1px solid #ddd;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .post {
@@ -512,3 +514,83 @@ body {
   .close:hover {
     color: #ff0000;
   }
+
+  .side-section .tab-navigation {
+    background-color: #f8f8f8;
+    border-right: 1px solid #eee; /* Separador visual entre navegación y contenido */
+    display: flex;
+    flex-direction: row; /* Apilamos los botones verticalmente */
+    align-items: stretch;
+    width: 100%; /* Ocupa el 50% del ancho de la barra lateral */
+}
+
+.side-section .tab-navigation button {
+    background: none;
+    width: 50%;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s ease;
+    border-bottom: 1px solid #eee; /* Separador entre botones */
+    text-align: left;
+}
+
+.side-section .tab-navigation button:last-child {
+    border-bottom: none;
+}
+
+.side-section .tab-navigation button:hover {
+    color: #007bff;
+    background-color: #eee;
+}
+
+.side-section .tab-navigation button.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 3px solid #007bff;
+    background-color: #e9ecef;
+}
+
+.side-section .tab-content-container {
+    padding: 15px;
+    background-color: #fff;
+    width: 100%; 
+    border-left: 1px solid #eee; 
+}
+
+.destacadas-container {
+  display: grid;
+  gap: 15px;
+  overflow-y: auto;
+  padding-right: 5px; 
+  scrollbar-width: none;
+}
+
+/* Estilos para las cards (si aún no los tienes) */
+.card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.card p {
+  margin-bottom: 0;
+  color: #666;
+}

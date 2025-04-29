@@ -5,10 +5,12 @@ import { ServiciosService } from '../servicios.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PostUpdateService } from '../post-update.service';
+import { UserEventsGeneralComponent } from './user-events-general/user-events-general.component';
+import { UserPostsGeneralComponent } from './user-posts-general/user-posts-general.component';
 
 @Component({
   selector: 'app-user-general',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UserEventsGeneralComponent, UserPostsGeneralComponent],
   templateUrl: './user-general.component.html',
   styleUrl: './user-general.component.css'
 })
@@ -16,6 +18,7 @@ export class UserGeneralComponent implements OnInit {
   dataUrl = 'http://localhost/dataTFG/';
   userData: any = null;
   posts: any[] = [];
+  events: any[] = []; // Para los eventos del usuario
   followersCount: number = 0;
   followingCount: number = 0;
   showEditModal: boolean = false;
@@ -23,6 +26,7 @@ export class UserGeneralComponent implements OnInit {
   profileImage: string | null = null;
   valoracionGlobal: number | null = null;
   isFollowing: boolean = false; // Variable para controlar el estado de seguimiento
+  showPosts: boolean = true;
 
   private postUpdateSubscription: Subscription;
 
@@ -59,11 +63,36 @@ export class UserGeneralComponent implements OnInit {
     return null;
   }
 
+  marcarUsuario(tipo: 'bueno' | 'malo') {
+    if (this.username) {
+      this.servicios.marcarUsuario(this.username, tipo).subscribe({
+        next: (response) => {
+          console.log(`Usuario marcado como ${tipo}:`, response);
+          if (tipo === 'bueno') {
+            this.marcarBuenUsuario();
+          } else if (tipo === 'malo') {
+            this.marcarMalUsuario();
+          }
+          this.loadValoracionGlobal();
+        },
+        error: (error) => {
+          console.error(`Error al marcar como ${tipo}:`, error);
+          if (error.status === 409) {
+            alert(error.error.message);
+          } else {
+            alert(`Error al marcar como ${tipo}.`);
+          }
+        }
+      });
+    }
+  }
+
   loadPosts() {
     // ... (sin cambios)
   }
 
   loadUserData() {
+    console.log(this.username)
     this.servicios.getUserData(this.username!).subscribe({
       next: (data) => {
         if (data.user) {
@@ -71,6 +100,7 @@ export class UserGeneralComponent implements OnInit {
           this.posts = data.posts;
           this.followersCount = data.followersCount;
           this.followingCount = data.followingCount;
+          this.events = data.events || [];
         } else {
           this.userData = null;
           console.log('Usuario no encontrado');
@@ -83,7 +113,7 @@ export class UserGeneralComponent implements OnInit {
   }
 
   loadProfileImage() {
-    this.servicios.getProfileImage(this.username!).subscribe({
+    this.servicios.getProfileImageValoracion(this.username!).subscribe({
       next: (data) => {
         this.profileImage = data.profile_image || null;
       },
@@ -178,5 +208,18 @@ checkIfFollowing() {
 
   goToPost(id: number) {
     this.router.navigate(['main/big_post', id]);
+  }
+
+  handleViewPost(postId: number) {
+    this.goToPost(postId);
+  }
+
+  handleViewEvent(eventId: number) {
+    // Aquí podrías navegar a la página de detalles del evento
+    console.log('Ver detalles del evento:', eventId);
+  }
+
+  toggleView(view: 'posts' | 'events') {
+    this.showPosts = view === 'posts';
   }
 }

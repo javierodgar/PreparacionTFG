@@ -1,0 +1,24 @@
+<div *ngIf="events.length === 0">
+  <p>No has creado ningún evento aún.</p>
+</div>
+
+@for(event of events; track $index){
+  @if(event.estado_id != 4){
+  <div class="post" (click)="goToEvent(event.id)">
+    
+      <!--Marca de agua-->
+      <div *ngIf="event.estado_id == 3 || event.estado_id == 4" class="watermark">
+        {{ event.nombre }}
+      </div>
+  
+      <h3>{{ event.titulo }}</h3>
+      <img *ngIf="event.imagen_portada" [src]="dataUrl + event.imagen_portada" alt="Portada del evento" />
+      <p>{{ event.descripcion }}</p>
+      <p><strong>Comienza:</strong> {{ event.fecha_inicio | date: 'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Finaliza:</strong> {{ event.fecha_fin }}</p>
+      <p><strong>Categoría:</strong> {{ event.categoria }}</p>
+      <p><strong>Dirección:</strong> {{ event.direccion }}</p>
+    
+  </div>
+  }
+}

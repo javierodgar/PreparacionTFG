@@ -19,7 +19,7 @@ try {
     }
 
     // Consulta para obtener los usuarios inscritos en el evento, incluyendo su nombre de usuario
-    $query = "SELECT u.id AS usuario_id, u.usuario AS username, ie.fecha_inscripcion
+    $query = "SELECT u.id AS usuario_id, u.usuario AS username, ie.fecha_inscripcion, u.valoracion_global as valoracion
               FROM InscripcionesEventos ie
               INNER JOIN Usuarios u ON ie.usuario_id = u.id
               WHERE ie.evento_id = :evento_id";

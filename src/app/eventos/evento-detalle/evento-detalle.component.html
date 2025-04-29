@@ -35,9 +35,9 @@
     </div>
 
     <div *ngIf="usuarioLogueadoId" class="inscripcion-acciones">
-      <button *ngIf="!evento.esta_inscrito" (click)="inscribirse()">Inscribirse</button>
-      <button *ngIf="evento.esta_inscrito" (click)="desinscribirse()">Desinscribirse</button>
-      <p *ngIf="evento.esta_inscrito">Estás inscrito en este evento.</p>
+      <button *ngIf="evento.esta_inscrito == 0" (click)="inscribirse(evento.estado_id, evento.fecha_fin)">Inscribirse</button>
+      <button *ngIf="evento.esta_inscrito != 0" (click)="desinscribirse()">Desinscribirse</button>
+      <p *ngIf="evento.esta_inscrito != 0">Estás inscrito en este evento.</p>
     </div>
 
     <app-mapa [coords]="eventoCoords"></app-mapa>
@@ -84,6 +84,7 @@
 </div>
 
 <app-modal-admin-evento
+  [estado]="evento.estado_id"
   [isVisible]="mostrarModalAdmin"
   (modalClosed)="mostrarModalAdmin = false"
   (eventoId)="eventoId"

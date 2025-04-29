@@ -27,7 +27,18 @@ if (empty($username)) {
 require_once 'db_config.php';
 
 try {
-    // La conexión PDO ya está disponible a través de $pdo incluido desde db_config.php
+
+    // Obtener ID del usuario por su nombre de usuario
+    $stmtUserId = $pdo->prepare("SELECT id FROM Usuarios WHERE usuario = :username");
+    $stmtUserId->bindParam(":username", $username);
+    $stmtUserId->execute();
+    $userResult = $stmtUserId->fetch(PDO::FETCH_ASSOC);
+
+    if (!$userResult || !isset($userResult['id'])) {
+        http_response_code(404);
+        echo json_encode(["message" => "Usuario no encontrado"]);
+        exit;
+    }
 
     // Obtener datos del usuario
     $stmtUser = $pdo->prepare("SELECT usuario, nombre, apellido1, apellido2, correo_electronico, ciudad_residencia FROM Usuarios WHERE usuario = :username");
@@ -41,6 +52,7 @@ try {
         exit;
     }
 
+   
     // Obtener publicaciones del usuario y sus hashtags
     $stmtPosts = $pdo->prepare("SELECT id, imagen, titulo, texto FROM Publicaciones WHERE usuario = :username");
     $stmtPosts->bindParam(":username", $username);
@@ -63,6 +75,15 @@ try {
         $posts[] = $postRow;
     }
 
+
+     // Obtener eventos creados por el usuario
+     $stmtEvents = $pdo->prepare("SELECT evt.id, evt.titulo, evt.descripcion, evt.categoria, evt.imagen_portada, evt.direccion, evt.fecha_inicio, evt.fecha_fin, evt.estado_id, e.nombre FROM Eventos evt 
+	    inner join estadosevento e on e.id = evt.estado_id WHERE usuario_creador_id = :userId
+     ");
+     $stmtEvents->bindParam(":userId", $userResult['id'], PDO::PARAM_INT);
+     $stmtEvents->execute();
+     $eventsResult = $stmtEvents->fetchAll(PDO::FETCH_ASSOC);
+
     // Obtener usuarios a los que sigue (seguidos)
     $stmtFollowing = $pdo->prepare("SELECT seguido FROM Seguidores WHERE seguidor = :username");
     $stmtFollowing->bindParam(":username", $username);
@@ -83,7 +104,9 @@ try {
         "following" => $followingResult,
         "followers" => $followersResult,
         "followingCount" => count($followingResult),
-        "followersCount" => count($followersResult)
+        "followersCount" => count($followersResult),
+        "events" => $eventsResult,
+        "eventCount" => count($eventsResult)
     ];
 
     http_response_code(200);

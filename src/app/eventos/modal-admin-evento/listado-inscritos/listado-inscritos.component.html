@@ -6,6 +6,7 @@
         <th>ID de Usuario</th>
         <th>Nombre de Usuario</th>
         <th>Fecha de Inscripción</th>
+        <th>Valoracion Del usuario</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -14,6 +15,7 @@
         <td>{{ inscrito.usuario_id }}</td>
         <td>{{ inscrito.username }}</td>
         <td>{{ inscrito.fecha_inscripcion | date:'medium' }}</td>
+        <td>{{ inscrito.valoracion }}</td>
         <td>
           <button class="eliminar-button" (click)="eliminarInscrito(inscrito.usuario_id)">Eliminar</button>
         </td>

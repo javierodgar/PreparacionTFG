@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-header("Access-Control-Allow-Origin: http://localhost:4200"); // Permite el origen específico de Angular
+header("Access-Control-Allow-Origin: *"); // Permite el origen específico de Angular
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");

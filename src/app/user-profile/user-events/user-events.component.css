@@ -1,0 +1,80 @@
+.user-posts {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.user-posts h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.post {
+  position: relative; /* Asegura que .watermark se posicione respecto a .post */
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  min-height: 150px; /* Espacio mínimo para la marca de agua */
+  z-index: 1; /* Evita interferencia de contenedores superiores */
+}
+
+.post:hover {
+  background-color: #f0f0f0;
+}
+
+.post h3 {
+  color: #007bff;
+  margin-top: 0;
+  margin-bottom: 5px;
+  font-size: 1.1em;
+  position: relative;
+  z-index: 5; /* Debajo de .watermark */
+}
+
+.post img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 5; /* Debajo de .watermark */
+}
+
+.post p {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 5; /* Debajo de .watermark */
+}
+
+.hashtags {
+  color: #00aaff;
+  font-size: 0.9em;
+}
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-35deg);
+  color: rgba(255, 0, 0, 0.7); /* Rojo oscuro con opacidad */
+  font-size: 2rem; /* Ajustado para mejor ajuste */
+  font-weight: bold;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 10; /* Encima del contenido de .post */
+  white-space: nowrap;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para legibilidad */
+
+}

@@ -97,4 +97,12 @@ export class ServiciosEventosService {
     const url = `${this.baseUrl}/obtener_eventos_inscrito.php`;
     return this.http.post<any[]>(url, { usuario: nombreUsuario });
   }
+
+  actualizarEstadoEvento(eventoId: number, estadoId: number): Observable<any> {
+    const body = new FormData();
+    body.append('evento_id', eventoId.toString());
+    body.append('estado_id', estadoId.toString());
+
+    return this.http.post(`${this.baseUrl}/actualizar_estado_evento.php`, body);
+  }
 }

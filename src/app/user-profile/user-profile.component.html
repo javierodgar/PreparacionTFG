@@ -39,10 +39,15 @@
         (viewPost)="handleViewPost($event)"
       ></app-user-posts>
     </div>
-  
+
     <div *ngIf="!showPosts">
-      <p>Contenido de los eventos del usuario (se implementará después)</p>
+      <app-user-events
+        [events]="events"
+        [dataUrl]="dataUrl"
+        (viewEvent)="handleViewEvent($event)"
+      ></app-user-events>
     </div>
+
   
     <div class="modal" *ngIf="showEditModal">
       <div class="modal-content">

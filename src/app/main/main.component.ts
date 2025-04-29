@@ -16,6 +16,16 @@ import { EventosSideComponent } from './eventos-side/eventos-side.component';
 })
 export class MainComponent {
 
+  publicacionesDestacadas: any[] = [];
+  loading: boolean = true;
+  error: string = '';
+  usuarioLogueado = 'asd';
+ 
+  eventosPopulares: any[] = [];
+  usuarioCreadorExcluir: string = 'asd';
+
+  activeTab:  'destacadas' | 'events' = 'destacadas';
+
   dataUrl = 'dataTFG/';
   posts: any[] = []; // Todas las publicaciones
   filteredPosts: any[] = []; // Publicaciones filtradas
@@ -52,12 +62,71 @@ export class MainComponent {
       this.router.navigate(['/']);
     } else {
       this.obtenerImagenPerfil(); // Llama a la función al inicializar si hay un usuario logueado
+      this.usuarioLogueado = this.username; // Asigna el username a la variable de usuario logueado
+      this.usuarioCreadorExcluir = this.username; // Asigna el username a la variable de eventos populares
     }
   }
 
   ngOnInit() {
     this.cargarEventosInscritos(this.username); // Cargar eventos inscritos al iniciar el componente
+    this.cargarPublicacionesDestacadas();
+    this.cargarEventosPopulares();
   }
+
+  setActiveTab(tab: 'destacadas' | 'events'): void {
+    this.activeTab = tab; 
+  }
+
+  cargarEventosPopulares(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.servicios.getEventosPopulares(this.usuarioCreadorExcluir)
+      .subscribe({
+        next: (data) => {
+          console.log('Datos recibidos del backend:', data);
+          this.eventosPopulares = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = 'Error al cargar los eventos populares.';
+          console.error(err);
+          this.loading = false;
+        }
+      });
+  }
+
+  showEventoId(eventoId: number): void {
+    this.router.navigate(['main/big_event', eventoId]);
+  }
+
+  cargarPublicacionesDestacadas(): void {
+    this.loading = true;
+    this.servicios.getPublicacionesDestacadas(this.usuarioLogueado).subscribe({
+      next: (data) => {
+        this.publicacionesDestacadas = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Error al cargar las publicaciones destacadas.';
+        console.error(err);
+        this.loading = false;
+      }
+    });
+  }
+
+
+  showPostId(postId: number): void {
+    this.router.navigate(['main/big_post', postId]); 
+  }
+
+  private setCookie(name: string, value: string, days: number): void {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + date.toUTCString();
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+  }
+
 
   cargarEventosInscritos(username:any): void {
     console.log('Cargando eventos inscritos para el usuario:', username);
@@ -196,6 +265,7 @@ export class MainComponent {
             this.profileImageUrl = 'http://localhost/dataTFG/' + data.profile_image;
             this.errorMessageProfileImage = null;
             console.log('URL de la imagen de perfil:', this.profileImageUrl);
+            this.setCookie('valoracionUsuario', data.valoracion_global, 1);
           } else {
             this.profileImageUrl = null;
             this.errorMessageProfileImage = data?.message || 'No se encontró la imagen de perfil.';

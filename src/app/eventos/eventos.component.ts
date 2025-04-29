@@ -15,12 +15,27 @@ export class EventosComponent implements OnInit {
   eventos: any[] = [];
   filtroBusqueda: string = '';
   mostrarModalCrearEvento: boolean = false;
+  valoracionUsuario: number = 0;
 
   constructor(private serviciosService: ServiciosEventosService, private router: Router) { }
 
   ngOnInit(): void {
     this.cargarEventos();
+    this.valoracionUsuario = parseInt(this.getCookie('valoracionUsuario') || '0');
   }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = name + "=";
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(nameEQ)) {
+        return cookie.substring(nameEQ.length);
+      }
+    }
+    return null;
+  }
+
 
   cargarEventos() {
     this.serviciosService.obtenerEventos().subscribe(
@@ -34,7 +49,11 @@ export class EventosComponent implements OnInit {
   }
 
   abrirModalCrearEvento() {
-    this.mostrarModalCrearEvento = true;
+    if(this.valoracionUsuario >= 2.000){
+      this.mostrarModalCrearEvento = true;
+    } else {
+      console.warn('No puedes crear un evento si no tienes una valoración de 2 o superior.');
+    }
   }
 
   cerrarModalCrearEvento() {

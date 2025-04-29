@@ -44,6 +44,48 @@
                         
                     </div>
                   }
+
+                  <div class="tab-navigation">
+                    <button
+                        [ngClass]="{'active': activeTab === 'destacadas'}"
+                        (click)="setActiveTab('destacadas')"
+                    >
+                        Destacadas
+                    </button>
+                    <button
+                        [ngClass]="{'active': activeTab === 'events'}"
+                        (click)="setActiveTab('events')"
+                    >
+                        Eventos
+                    </button>
+                </div>
+
+                <div *ngIf="activeTab === 'destacadas'" class="tab-content-container">
+                  <div #scrollContainer class="destacadas-container">
+                    <div *ngIf="loading">Cargando publicaciones destacadas...</div>
+                    <div *ngIf="error">{{ error }}</div>
+                    <div *ngFor="let publicacion of publicacionesDestacadas" class="card" (click)="showPostId(publicacion.id)">
+                      <h3>{{ publicacion.titulo }}</h3>
+                      <p>{{ publicacion.texto }}</p>
+                    </div>
+                    <div *ngIf="publicacionesDestacadas.length === 0 && !loading && !error">
+                      No hay publicaciones destacadas para mostrar.
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="activeTab === 'events'" class="tab-content-container">
+                  <div class="destacadas-container">
+                    <div *ngIf="loading">Cargando eventos populares...</div>
+                    <div *ngIf="error">{{ error }}</div>
+                    <div *ngFor="let evento of eventosPopulares" class="card" (click)="showEventoId(evento.evento_id)">
+                      <h3>{{ evento.titulo }}</h3>
+                      <p>Fecha de Creación: {{ evento.fecha_creacion | date }}</p>
+                    </div>
+                    <div *ngIf="eventosPopulares.length === 0 && !loading && !error">
+                      No hay eventos populares para mostrar.
+                    </div>
+                  </div>
+                </div>
             </div>
         </div>
     </div>

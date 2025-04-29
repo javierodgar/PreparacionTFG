@@ -103,21 +103,21 @@ export class CrearEventosComponent implements AfterViewInit, OnDestroy {
   }
 
   formData(evento: any): FormData {
-        const formData = new FormData();
-        formData.append('usuario', this.logedinUsername); // <---- AÑADIDO ESTO
-        formData.append('titulo', evento.titulo);
-        formData.append('descripcion', evento.descripcion);
-        formData.append('categoria', evento.categoria);
-        if (evento.imagen_portada) {
-          formData.append('imagen_portada', evento.imagen_portada, evento.imagen_portada.name);
-        }
-        formData.append('direccion', evento.direccion);
-        formData.append('fecha_inicio', evento.fecha_inicio);
-        formData.append('fecha_fin', evento.fecha_fin || '');
-        formData.append('latitud', evento.latitud.toString());
-        formData.append('longitud', evento.longitud.toString());
-        return formData;
-      }
+       const formData = new FormData();
+       formData.append('usuario', this.logedinUsername); 
+       formData.append('titulo', evento.titulo);
+       formData.append('descripcion', evento.descripcion);
+       formData.append('categoria', evento.categoria);
+       if (evento.imagen_portada) {
+         formData.append('imagen_portada', evento.imagen_portada, evento.imagen_portada.name);
+       }
+       formData.append('direccion', evento.direccion);
+       formData.append('fecha_inicio', evento.fecha_inicio);
+       formData.append('fecha_fin', evento.fecha_fin || '');
+       formData.append('latitud', evento.latitud.toString());
+       formData.append('longitud', evento.longitud.toString());
+       return formData;
+      }
 
   private initMap(): void {
     if (this.mapContainer) {
